@@ -23,13 +23,24 @@ public class PacienteController {
         return pacientes;
     }
 
-    @PostMapping("api/addpaciente")
+    @PostMapping("/addpaciente")
     public ResponseEntity<String> cadastrar(@Valid @RequestBody CadastrarPaciente cadastrar, BindingResult result){
         if (result.hasErrors()){
-            return ResponseEntity.badRequest().body(String.valueOf((CadastrarPaciente) result.getAllErrors()));
+            return ResponseEntity.badRequest().body("Erro de validação: " + result.getAllErrors());
         }
-        CadastrarPaciente cadastrarPaciente = pr.save(cadastrar);
-        return ResponseEntity.ok("Paciente inserido com sucesso! CPF: " + cadastrarPaciente.getCpf());
+        if (cadastrar.getNome() == null || cadastrar.getNome().trim().isEmpty() ||
+                cadastrar.getCpf() == null || cadastrar.getCpf().trim().isEmpty() ||
+                cadastrar.getRg() == null || cadastrar.getRg().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Campos obrigatórios não podem estar vazios (Nome, CPF, RG).");
+        }
+
+
+        if (pr.existsByRg(cadastrar.getRg())){
+            return ResponseEntity.badRequest().body("RG já existe no banco de dados.");
+        }
+
+        CadastrarPaciente paciente = pr.save(cadastrar);
+        return ResponseEntity.ok("redirect:api/pacientes"+"Paciente inserido com sucesso! ID: " + cadastrar.getId());
     }
 
     @DeleteMapping("deletepaciente/{id}")
