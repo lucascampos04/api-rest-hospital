@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("api/pacientes")
 public class PacienteController {
@@ -45,11 +46,12 @@ public class PacienteController {
 
     @DeleteMapping("deletepaciente/{id}")
     public ResponseEntity<Void> deletePaciente(@PathVariable Long id){
-       if (!pr.existsById(id)){
+       if (pr.existsById(id)){
+           pr.deleteById(id);
            return ResponseEntity.ok().build();
+       } else {
+           return ResponseEntity.notFound().build();
        }
-       pr.deleteById(id);
-       return ResponseEntity.notFound().build();
     }
 
 
