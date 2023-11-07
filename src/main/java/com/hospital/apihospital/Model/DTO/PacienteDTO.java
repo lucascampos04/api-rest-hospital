@@ -16,4 +16,7 @@ public record PacienteDTO(Long id, String nome, String cpf, String rg) {
         this.cpf = cpf;
         this.rg = rg;
     }
+    public Long getId(){
+        return id;
+    }
 }
