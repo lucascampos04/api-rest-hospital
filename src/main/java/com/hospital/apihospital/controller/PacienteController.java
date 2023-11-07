@@ -1,47 +1,58 @@
 package com.hospital.apihospital.controller;
 
+import com.hospital.apihospital.Model.DTO.PacienteDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
 import com.hospital.apihospital.Model.Repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("api/pacientes")
+@RequestMapping("api/v1/pacientes")
 public class PacienteController {
 
     @Autowired
     private PacienteRepository pr;
 
     @GetMapping
-    public List<CadastrarPaciente> listarPacientes(){
+    public List<PacienteDTO> listarPacientes(){
         List<CadastrarPaciente> pacientes = pr.findAll();
-        return pacientes;
+        List<PacienteDTO> pacienteDTOs = pacientes.stream()
+                .map(PacienteDTO::fromEntity)
+                .collect(Collectors.toList());
+        return pacienteDTOs;
     }
 
     @PostMapping("/addpaciente")
-    public ResponseEntity<String> cadastrar(@Valid @RequestBody CadastrarPaciente cadastrar, BindingResult result){
+    public ResponseEntity<String> cadastrar(@Valid @RequestBody PacienteDTO pacienteDTO, BindingResult result){
         if (result.hasErrors()){
-            return ResponseEntity.badRequest().body("Erro de validação: " + result.getAllErrors());
-        }
-        if (cadastrar.getNome() == null || cadastrar.getNome().trim().isEmpty() ||
-                cadastrar.getCpf() == null || cadastrar.getCpf().trim().isEmpty() ||
-                cadastrar.getRg() == null || cadastrar.getRg().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Campos obrigatórios não podem estar vazios (Nome, CPF, RG).");
-        }
-
-
-        if (pr.existsByRg(cadastrar.getRg())){
-            return ResponseEntity.badRequest().body("RG já existe no banco de dados.");
+            StringBuilder errorMensagem = new StringBuilder("Erro de validação: ");
+            result.getAllErrors().forEach(error -> {
+                errorMensagem.append(error.getDefaultMessage()).append("; ");
+            });
+            return ResponseEntity.badRequest().body(errorMensagem.toString());
         }
 
-        CadastrarPaciente paciente = pr.save(cadastrar);
-        return ResponseEntity.ok("redirect:api/pacientes"+"Paciente inserido com sucesso! ID: " + cadastrar.getId());
+        try{
+            CadastrarPaciente paciente = new CadastrarPaciente();
+            paciente.setNome(pacienteDTO.nome());
+            paciente.setCpf(pacienteDTO.cpf());
+            paciente.setRg(pacienteDTO.rg());
+
+            CadastrarPaciente pacienteSave = pr.save(paciente);
+
+            return ResponseEntity.ok("Paciente cadastrado com sucesso! ID: " + pacienteSave.getId());
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar o paciente: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("deletepaciente/{id}")
