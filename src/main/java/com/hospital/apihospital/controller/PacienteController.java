@@ -51,7 +51,7 @@ public class PacienteController {
      * @return Os dados do paciente se encontrado, ou um erro se não encontrado.
      */
     @PostMapping("/buscarpaciente")
-    public ResponseEntity<?> getPacienteById(@RequestBody PacienteDTO pesquisarPorIdRequest ){
+    public ResponseEntity<?> getPacienteByIdPost(@RequestBody PacienteDTO pesquisarPorIdRequest ){
         Long id = pesquisarPorIdRequest.getId();
         Optional<CadastrarPaciente> pacienteOptional = pr.findById(id);
         if (pacienteOptional.isPresent()){
@@ -63,6 +63,26 @@ public class PacienteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente não encontrado com o ID fornecido.");
         }
 
+    }
+
+    /**
+     * Obtém informações de um paciente pelo ID fornecido na URL.
+     *
+     * @param id O ID do paciente a ser pesquisado.
+     * @return Os dados do paciente se encontrado, ou um erro se não encontrado.
+     */
+    @GetMapping("/buscarpaciente/{id}")
+    public ResponseEntity<?> getPacientesByIdGet(@PathVariable Long id){
+        Optional<CadastrarPaciente> pacienteOptional = pr.findById(id);
+
+        if (pacienteOptional.isPresent()){
+            CadastrarPaciente cadastrarPaciente = pacienteOptional.get();
+            PacienteDTO pacienteDTO = PacienteDTO.fromEntity(cadastrarPaciente);
+            return ResponseEntity.ok(pacienteDTO);
+        } else{
+            System.out.println("Nada encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente não encontrado com o ID fornecido.");
+        }
     }
 
     /**
