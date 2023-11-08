@@ -6,12 +6,16 @@ import com.hospital.apihospital.Model.Repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -123,10 +127,19 @@ public class PacienteController {
             paciente.setNome(pacienteDTO.nome());
             paciente.setCpf(pacienteDTO.cpf());
             paciente.setRg(pacienteDTO.rg());
+            paciente.setGenero(pacienteDTO.genero());
+            paciente.setDataNascimento(pacienteDTO.dataNascimento());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("America/Sao_Paulo"));
+            String dataRegistroFormatada = sdf.format(new Date());
+            Date dataRegistro = sdf.parse(dataRegistroFormatada);
+
+            paciente.setDataRegistro(dataRegistro);
 
             CadastrarPaciente pacienteSave = pr.save(paciente);
 
-            return ResponseEntity.ok("Paciente cadastrado com sucesso! ID: " + pacienteSave.getId());
+            return ResponseEntity.ok("Paciente cadastrado com sucesso! ID: " + pacienteSave.getId() + " Data do registro : " + pacienteSave.getDataRegistro());
         } catch (Exception e) {
             // Lida com erros inesperados
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar o paciente: " + e.getMessage());
@@ -150,4 +163,18 @@ public class PacienteController {
             return ResponseEntity.notFound().build();
         }
     }
+    /**
+     * Controlador para excluir pacientes com campos nulos.
+     */
+    @DeleteMapping("/freekill")
+    public ResponseEntity<String> deletePacientesComCamposNulos(){
+        try{
+            pr.deleteAll();
+            return ResponseEntity.ok("Todos os paciente foram excluidos");
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao excluir todos os pacientes: " + e.getMessage());
+        }
+
+    }
+
 }
