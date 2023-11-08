@@ -35,6 +35,10 @@ public class CadastrarPaciente {
     @NotBlank(message = "Genero obrigatorio")
     private Character genero;
 
+    @Column(name = "plano_paciente", length = 50)
+    @NotBlank
+    private String plano_paciente;
+
     @Column(name = "data_registro")
     @Temporal(TemporalType.TIMESTAMP)
     @NotBlank(message = "A data de registro é obrigatória")
