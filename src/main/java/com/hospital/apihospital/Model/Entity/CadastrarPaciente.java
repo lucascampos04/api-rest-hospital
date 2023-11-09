@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "cadastrarPaciente")
@@ -44,4 +45,6 @@ public class CadastrarPaciente {
     @NotBlank(message = "A data de registro é obrigatória")
     private Date dataRegistro;
 
+    @OneToMany(mappedBy = "paciente", cascade = CascadeType.REMOVE)
+    private List<MarcaConsulta> consultas;
 }

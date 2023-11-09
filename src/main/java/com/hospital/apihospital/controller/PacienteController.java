@@ -157,15 +157,18 @@ public class PacienteController {
      */
     @DeleteMapping("deletepaciente/{id}")
     public ResponseEntity<Void> deletePaciente(@PathVariable Long id) {
-        if (pr.existsById(id)) {
-            // Deleta o paciente se existir
+        try {
+            mcr.deleteByPacienteId(id);
+
             pr.deleteById(id);
+
             return ResponseEntity.ok().build();
-        } else {
-            // Retorna um erro se o paciente não existe
-            return ResponseEntity.notFound().build();
+        } catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
     /**
      * Controlador para excluir pacientes com campos nulos.
