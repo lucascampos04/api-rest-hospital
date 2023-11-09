@@ -2,6 +2,7 @@ package com.hospital.apihospital.controller;
 
 import com.hospital.apihospital.Model.DTO.PacienteDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
+import com.hospital.apihospital.Model.Repository.MarcaConsultaRepository;
 import com.hospital.apihospital.Model.Repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,11 @@ public class PacienteController {
 
     @Autowired
     private PacienteRepository pr;
+    @Autowired
+    private MarcaConsultaRepository mcr;
 
-    private boolean isNumeric(String str){
-        if (str == null){
+    private boolean isNumeric(String str) {
+        if (str == null) {
             return false;
         }
         return str.matches("\\d");
@@ -54,10 +57,10 @@ public class PacienteController {
      * @return Os dados do paciente se encontrado, ou um erro se não encontrado.
      */
     @PostMapping("/buscarpaciente")
-    public ResponseEntity<?> getPacienteByIdPost(@RequestBody PacienteDTO pesquisarPorIdRequest ){
+    public ResponseEntity<?> getPacienteByIdPost(@RequestBody PacienteDTO pesquisarPorIdRequest) {
         Long id = pesquisarPorIdRequest.getId();
         Optional<CadastrarPaciente> pacienteOptional = pr.findById(id);
-        if (pacienteOptional.isPresent()){
+        if (pacienteOptional.isPresent()) {
             CadastrarPaciente cadastrarPaciente = pacienteOptional.get();
             PacienteDTO pacienteDTO = PacienteDTO.fromEntity(cadastrarPaciente);
             return ResponseEntity.ok(pacienteDTO);
@@ -75,14 +78,14 @@ public class PacienteController {
      * @return Os dados do paciente se encontrado, ou um erro se não encontrado.
      */
     @GetMapping("/buscarpaciente/{id}")
-    public ResponseEntity<?> getPacientesByIdGet(@PathVariable Long id){
+    public ResponseEntity<?> getPacientesByIdGet(@PathVariable Long id) {
         Optional<CadastrarPaciente> pacienteOptional = pr.findById(id);
 
-        if (pacienteOptional.isPresent()){
+        if (pacienteOptional.isPresent()) {
             CadastrarPaciente cadastrarPaciente = pacienteOptional.get();
             PacienteDTO pacienteDTO = PacienteDTO.fromEntity(cadastrarPaciente);
             return ResponseEntity.ok(pacienteDTO);
-        } else{
+        } else {
             System.out.println("Nada encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente não encontrado com o ID fornecido.");
         }
@@ -107,8 +110,8 @@ public class PacienteController {
         }
 
         // Validação de RG e CPF
-        boolean rgExiste = pr.existsByRg(pacienteDTO.rg());
-        boolean cpfExiste = pr.existsByCpf(pacienteDTO.cpf());
+        boolean rgExiste = pr.existsByRg(pacienteDTO.getRg());
+        boolean cpfExiste = pr.existsByCpf(pacienteDTO.getCpf());
 
         if (rgExiste && cpfExiste) {
             // Se ambos RG e CPF existirem, retorne um erro
@@ -123,11 +126,12 @@ public class PacienteController {
         try {
             // Cria um novo paciente e o salva no banco de dados
             CadastrarPaciente paciente = new CadastrarPaciente();
-            paciente.setNome(pacienteDTO.nome());
-            paciente.setCpf(pacienteDTO.cpf());
-            paciente.setRg(pacienteDTO.rg());
-            paciente.setGenero(pacienteDTO.genero());
-            paciente.setDataNascimento(pacienteDTO.dataNascimento());
+            paciente.setNome(pacienteDTO.getNome());
+            paciente.setCpf(pacienteDTO.getCpf());
+            paciente.setRg(pacienteDTO.getRg());
+            paciente.setGenero(pacienteDTO.getGenero());
+            paciente.setDataNascimento(pacienteDTO.getDataNascimento());
+            paciente.setPlano_paciente(pacienteDTO.getPlano_paciente());
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("America/Sao_Paulo"));
@@ -138,7 +142,7 @@ public class PacienteController {
 
             CadastrarPaciente pacienteSave = pr.save(paciente);
 
-            return ResponseEntity.ok("Paciente cadastrado com sucesso! ID: " + pacienteSave.getId() + " Data do registro : " + pacienteSave.getDataRegistro());
+            return ResponseEntity.ok("Paciente cadastrado com sucesso! ID: " + pacienteSave.getId() + " Data do registro : " + pacienteSave.getDataRegistro() + " PLano : " + paciente.getPlano_paciente());
         } catch (Exception e) {
             // Lida com erros inesperados
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar o paciente: " + e.getMessage());
@@ -162,18 +166,22 @@ public class PacienteController {
             return ResponseEntity.notFound().build();
         }
     }
+
     /**
      * Controlador para excluir pacientes com campos nulos.
      */
     @DeleteMapping("/freekill")
-    public ResponseEntity<String> deletePacientesComCamposNulos(){
-        try{
-            pr.deleteAll();
-            return ResponseEntity.ok("Todos os paciente foram excluidos");
-        } catch (Exception e){
+    public ResponseEntity<String> deletePacientesComCamposNulos() {
+        try {
+            List<CadastrarPaciente> pacientes = pr.findAll();
+            for (CadastrarPaciente paciente : pacientes) {
+                mcr.deleteAll();
+            }
+            pr.deleteAll(pacientes);
+
+            return ResponseEntity.ok("Todos os pacientes e registros relacionados foram excluídos com sucesso.");
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao excluir todos os pacientes: " + e.getMessage());
         }
-
     }
-
 }

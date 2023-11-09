@@ -65,7 +65,7 @@ public class MarcaConsultaController {
                 MarcaConsulta consultaSalva = salvarConsultaNoBanco(marcaConsulta);
 
                 if (consultaSalva != null) {
-                    return ResponseEntity.ok("Consulta registrada com sucesso");
+                    return ResponseEntity.ok("Consulta registrada com sucesso.\nID : " + paciente.getId() + " Plano do paciente : " + tipoPlano);
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar a consulta.");
                 }

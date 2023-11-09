@@ -38,4 +38,5 @@ public class MarcaConsulta {
     @ManyToOne
     @JoinColumn(name = "id_paciente")
     private CadastrarPaciente paciente;
+
 }
