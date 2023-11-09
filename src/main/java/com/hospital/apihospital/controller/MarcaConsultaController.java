@@ -5,6 +5,7 @@ import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
 import com.hospital.apihospital.Model.Repository.MarcaConsultaRepository;
 import com.hospital.apihospital.Model.Entity.MarcaConsulta;
 import com.hospital.apihospital.services.*;
+import com.hospital.apihospital.services.DescontoEmPlanos.PlanoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +20,9 @@ public class MarcaConsultaController {
     @Autowired
     private MarcaConsultaRepository marcaConsultaRepository;
     @Autowired
+    private PlanoService planoService;
+    @Autowired
     private PacienteServices pacienteServices;
-    @Autowired
-    private PlanoBronzeServices planoBronzeServices;
-    @Autowired
-    private PlanoPrataServices planoPrataServices;
-    @Autowired
-    private PlanoOuroServices planoOuroServices;
-    @Autowired
-    private PlanoVipServices planoVipServices;
 
     /**
      * Obtém uma lista de todas as consultas.
@@ -58,7 +53,7 @@ public class MarcaConsultaController {
             String tipoPlano = paciente.getPlano_paciente();
             double valorConsulta = marcaConsulta.getValorConsulta();
 
-            valorConsulta = aplicarDescontoDoPlano(tipoPlano, paciente, valorConsulta);
+            valorConsulta = planoService.calcularValorComDesconto(paciente, valorConsulta);
             marcaConsulta.setValorConsulta(valorConsulta);
 
             try {
@@ -75,19 +70,6 @@ public class MarcaConsultaController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Paciente não encontrado com o ID fornecido.");
         }
-    }
-
-    private double aplicarDescontoDoPlano(String tipoPlano, CadastrarPaciente paciente, double valorConsulta) {
-        if ("bronze".equalsIgnoreCase(tipoPlano)) {
-            valorConsulta = planoBronzeServices.calcularValorComDesconto(paciente, valorConsulta);
-        } else if ("prata".equalsIgnoreCase(tipoPlano)) {
-            valorConsulta = planoPrataServices.calcularValorComDesconto(paciente, valorConsulta);
-        } else if ("ouro".equalsIgnoreCase(tipoPlano)) {
-            valorConsulta = planoOuroServices.calcularValorComDesconto(paciente, valorConsulta);
-        } else if ("vip".equalsIgnoreCase(tipoPlano)) {
-            valorConsulta = planoVipServices.calcularValorComDesconto(paciente, valorConsulta);
-        }
-        return valorConsulta;
     }
 
     private MarcaConsulta salvarConsultaNoBanco(MarcaConsulta marcaConsulta) {
