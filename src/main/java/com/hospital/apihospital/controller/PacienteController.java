@@ -4,7 +4,9 @@ import com.hospital.apihospital.Model.DTO.PacienteDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
 import com.hospital.apihospital.Model.Repository.MarcaConsultaRepository;
 import com.hospital.apihospital.Model.Repository.PacienteRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -99,7 +101,7 @@ public class PacienteController {
      * @return Uma resposta com a mensagem de sucesso ou erro.
      */
     @PostMapping("/addpaciente")
-    public ResponseEntity<String> cadastrar(@Valid @RequestBody PacienteDTO pacienteDTO, BindingResult result) {
+    public ResponseEntity<String> cadastrar(@Valid @RequestBody PacienteDTO pacienteDTO, BindingResult result, HttpServletRequest httpServletRequest) {
         if (result.hasErrors()) {
             // Lida com erros de validação
             StringBuilder errorMensagem = new StringBuilder("Erro de validação: ");
@@ -141,6 +143,9 @@ public class PacienteController {
             paciente.setDataRegistro(dataRegistro);
 
             CadastrarPaciente pacienteSave = pr.save(paciente);
+
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Acess-Control-Allow-Origin", "http://localhost:5173");
 
             return ResponseEntity.ok("Paciente cadastrado com sucesso! ID: " + pacienteSave.getId() + " Data do registro : " + pacienteSave.getDataRegistro() + " PLano : " + paciente.getPlano_paciente());
         } catch (Exception e) {
