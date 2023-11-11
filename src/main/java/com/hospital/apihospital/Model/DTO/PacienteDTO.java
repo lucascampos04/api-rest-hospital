@@ -15,7 +15,7 @@ public class PacienteDTO {
     private String cpf;
     private String rg;
     private Date dataNascimento;
-    private Character genero;
+    private String genero;
     private Date dataRegistro;
     private String plano_paciente;
 
@@ -32,11 +32,12 @@ public class PacienteDTO {
         );
     }
 
+
     public PacienteDTO(Long id, String nome) {
         this(id, nome, null, null, null, null, null, null);
     }
 
-    public PacienteDTO(Long id, String nome, String cpf, String rg, Date dataNascimento, Character genero, Date dataRegistro, String plano_paciente) {
+    public PacienteDTO(Long id, String nome, String cpf, String rg, Date dataNascimento, String genero, Date dataRegistro, String plano_paciente) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;

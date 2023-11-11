@@ -32,9 +32,9 @@ public class CadastrarPaciente {
     @NotBlank(message = "A data de nascimento é obrigatorio")
     private Date dataNascimento;
 
-    @Column(name = "genero", columnDefinition = "CHAR(1)")
+    @Column(name = "genero", length = 30)
     @NotBlank(message = "Genero obrigatorio")
-    private Character genero;
+    private String genero;
 
     @Column(name = "plano_paciente", length = 50)
     @NotBlank

@@ -1,11 +1,11 @@
 package com.hospital.apihospital.Model.Repository;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.yaml.snakeyaml.events.Event;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,4 +26,7 @@ public interface PacienteRepository extends JpaRepository<CadastrarPaciente, Lon
             "WHERE (p.nome IS NULL OR p.nome = '' OR p.rg IS NULL OR p.rg = '' OR p.cpf IS NULL OR p.cpf = '')")
     List<CadastrarPaciente> findByCamposNulos();
 
+    Optional<CadastrarPaciente> findById(Long id);
+
+    void deleteById(Long id);
 }

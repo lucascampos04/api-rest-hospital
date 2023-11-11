@@ -125,6 +125,12 @@ public class PacienteController {
             return ResponseEntity.badRequest().body("Erro: RG e CPF já estão registrados no banco de dados.");
         }
 
+        String genero = pacienteDTO.getGenero();
+
+        if (!"Masculino".equalsIgnoreCase(genero) && !"Feminino".equalsIgnoreCase(genero)){
+            return ResponseEntity.badRequest().body("Erro: Gênero inválido. Escolha 'Masculino' ou 'Feminino'.");
+        }
+
         try {
             // Cria um novo paciente e o salva no banco de dados
             CadastrarPaciente paciente = new CadastrarPaciente();
