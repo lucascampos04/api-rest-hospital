@@ -8,7 +8,7 @@ public class ApiHospitalApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ApiHospitalApplication.class, args);
-        System.out.println("Servidor rodando");
+        System.out.println("Api rodando na url : http://localhost:8080/");
     }
 
 }
