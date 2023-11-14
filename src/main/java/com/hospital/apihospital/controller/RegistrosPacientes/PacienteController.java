@@ -1,24 +1,35 @@
-package com.hospital.apihospital.controller;
+package com.hospital.apihospital.controller.RegistrosPacientes;
 
-import com.hospital.apihospital.Model.DTO.PacienteDTO;
-import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
-import com.hospital.apihospital.Model.Repository.MarcaConsultaRepository;
-import com.hospital.apihospital.Model.Repository.PacienteRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.hospital.apihospital.Model.DTO.PacienteDTO;
+import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
+import com.hospital.apihospital.Model.Repository.MarcaConsultaRepository;
+import com.hospital.apihospital.Model.Repository.PacienteRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -37,7 +48,6 @@ public class PacienteController {
         return str.matches("\\d");
     }
 
-
     /**
      * Obtém a lista de pacientes.
      *
@@ -55,7 +65,8 @@ public class PacienteController {
     /**
      * Obtém informações de um paciente pelo ID fornecido no corpo da solicitação.
      *
-     * @param pesquisarPorIdRequest O objeto PesquisaPorIdRequest contendo o ID do paciente a ser pesquisado.
+     * @param pesquisarPorIdRequest O objeto PesquisaPorIdRequest contendo o ID do
+     *                              paciente a ser pesquisado.
      * @return Os dados do paciente se encontrado, ou um erro se não encontrado.
      */
     @PostMapping("/buscarpaciente")
@@ -96,12 +107,14 @@ public class PacienteController {
     /**
      * Cadastra um novo paciente.
      *
-     * @param pacienteDTO O objeto PacienteDTO contendo informações do paciente a ser cadastrado.
+     * @param pacienteDTO O objeto PacienteDTO contendo informações do paciente a
+     *                    ser cadastrado.
      * @param result      O objeto BindingResult para validação.
      * @return Uma resposta com a mensagem de sucesso ou erro.
      */
     @PostMapping("/addpaciente")
-    public ResponseEntity<String> cadastrar(@Valid @RequestBody PacienteDTO pacienteDTO, BindingResult result, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<String> cadastrar(@Valid @RequestBody PacienteDTO pacienteDTO, BindingResult result,
+            HttpServletRequest httpServletRequest) {
         if (result.hasErrors()) {
             // Lida com erros de validação
             StringBuilder errorMensagem = new StringBuilder("Erro de validação: ");
@@ -127,7 +140,7 @@ public class PacienteController {
 
         String genero = pacienteDTO.getGenero();
 
-        if (!"Masculino".equalsIgnoreCase(genero) && !"Feminino".equalsIgnoreCase(genero)){
+        if (!"Masculino".equalsIgnoreCase(genero) && !"Feminino".equalsIgnoreCase(genero)) {
             return ResponseEntity.badRequest().body("Erro: Gênero inválido. Escolha 'Masculino' ou 'Feminino'.");
         }
 
@@ -153,10 +166,44 @@ public class PacienteController {
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Acess-Control-Allow-Origin", "http://localhost:5173");
 
-            return ResponseEntity.ok("Paciente cadastrado com sucesso! ID: " + pacienteSave.getId() + " Data do registro : " + pacienteSave.getDataRegistro() + " PLano : " + paciente.getPlano_paciente());
+            return ResponseEntity
+                    .ok("Paciente cadastrado com sucesso! ID: " + pacienteSave.getId() + " Data do registro : "
+                            + pacienteSave.getDataRegistro() + " PLano : " + paciente.getPlano_paciente());
         } catch (Exception e) {
             // Lida com erros inesperados
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar o paciente: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao cadastrar o paciente: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/atualizar-paciente/{id}")
+    public ResponseEntity<String> atualizarpaciente(@PathVariable Long id, @Valid @RequestBody PacienteDTO pacienteDTO,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            StringBuilder erroMsg = new StringBuilder("Erro de validação: ");
+            result.getAllErrors().forEach(error -> {
+                erroMsg.append(error.getDefaultMessage()).append("; ");
+            });
+            return ResponseEntity.badRequest().body(erroMsg.toString());
+        }
+
+        Optional<CadastrarPaciente> pacienteOptional = pr.findById(id);
+
+        if (pacienteOptional.isPresent()) {
+            CadastrarPaciente pacienteExistente = pacienteOptional.get();
+
+            pacienteExistente.setNome(pacienteDTO.getNome());
+            pacienteExistente.setCpf(pacienteDTO.getCpf());
+            pacienteExistente.setRg(pacienteDTO.getRg());
+            pacienteExistente.setGenero(pacienteDTO.getGenero());
+            pacienteExistente.setDataNascimento(pacienteDTO.getDataNascimento());
+            pacienteExistente.setPlano_paciente(pacienteDTO.getPlano_paciente());
+
+            CadastrarPaciente pacienteAtualizado = pr.save(pacienteExistente);
+
+            return ResponseEntity.ok("Paciente atualizado com sucesso ID : " + pacienteAtualizado.getId());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente não encontrado com o ID fornecido");
         }
     }
 
@@ -174,12 +221,11 @@ public class PacienteController {
             pr.deleteById(id);
 
             return ResponseEntity.ok().build();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
     /**
      * Controlador para excluir pacientes com campos nulos.
@@ -195,7 +241,8 @@ public class PacienteController {
 
             return ResponseEntity.ok("Todos os pacientes e registros relacionados foram excluídos com sucesso.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao excluir todos os pacientes: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao excluir todos os pacientes: " + e.getMessage());
         }
     }
 }

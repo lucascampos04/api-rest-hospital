@@ -1,4 +1,4 @@
-package com.hospital.apihospital.controller;
+package com.hospital.apihospital.controller.RegistroConsultas;
 
 import com.hospital.apihospital.Model.DTO.ConsultaDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
