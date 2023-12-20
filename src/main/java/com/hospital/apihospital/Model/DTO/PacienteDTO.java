@@ -1,6 +1,7 @@
 package com.hospital.apihospital.Model.DTO;
 
 import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
+import com.hospital.apihospital.Model.Enum.CargoEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class PacienteDTO {
     private String genero;
     private Date dataRegistro;
     private String plano_paciente;
+
 
     public static PacienteDTO fromEntity(CadastrarPaciente paciente) {
         return new PacienteDTO(
