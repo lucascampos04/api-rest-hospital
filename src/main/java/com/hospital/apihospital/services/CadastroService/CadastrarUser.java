@@ -17,7 +17,7 @@ public class CadastrarUser {
     @Transactional
     public ResponseEntity<String> cadastrarPaciente(UsersDTO usersDTO){
         try{
-            ResponseEntity<String> validationResult = validateDataOfUser(usersDTO);
+            ResponseEntity<String> validationResult = validateDataOfUserPREmployees(usersDTO);
             if (validationResult != null){
                 return validationResult;
             }
@@ -32,43 +32,31 @@ public class CadastrarUser {
         CargoEnum cargo = usersDTO.getCargo();
         RoleEnum role = usersDTO.getRole();
 
-        // verificação se esta sendo inserido um paciente
-        if (cargo == null){
-            if (RoleEnum.PACIENTE.equals(role)){
-                return ResponseEntity.ok().build();
-            }
-        }
-
-        // verificação se esta sendo inserido um funcionario
-        if (cargo != null){
-            if (RoleEnum.FUNCIONARIO.equals(role)){
-                return ResponseEntity.ok().build();
+        if (role != null){
+            // verificação se esta sendo inserido um paciente
+            if (cargo == null){
+                if (RoleEnum.PACIENTE.equals(role)){
+                    return ResponseEntity.ok().build();
+                }
             }
 
-            ResponseEntity<String> validateEmployeesFinally = validateDataEmployees(usersDTO);
+            // verificação se esta sendo inserido um funcionario
+            if (cargo != null){
+                if (RoleEnum.FUNCIONARIO.equals(role)){
+                    return ResponseEntity.ok().build();
+                }
 
-            try {
-                return validateEmployeesFinally;
-            } catch (Exception e){
-                return ResponseEntity.badRequest().body("Erro ao validadar funcionario");
+                ResponseEntity<String> validateEmployeesFinally = validateDataEmployees(usersDTO);
+
+                try {
+                    return validateEmployeesFinally;
+                } catch (Exception e){
+                    return ResponseEntity.badRequest().body("Erro ao validadar funcionario");
+                }
             }
+        } else {
+            return ResponseEntity.badRequest().body("Erro: Role é obrigatoria");
         }
-
-        return null;
-    }
-    private ResponseEntity<String> validateDataOfUser(UsersDTO usersDTO){
-        if (usersRepository.existsByRg(usersDTO.getRg())){
-            return ResponseEntity.badRequest().body("Dados incorreto. Tente Novamente");
-        }
-
-        if (usersRepository.existsByCpf(usersDTO.getRg())){
-            return ResponseEntity.badRequest().body("Dados incorreto. Tente Novamente");
-        }
-
-        if (!"Masculino".equalsIgnoreCase(usersDTO.getGenero()) && !"Feminino".equalsIgnoreCase(usersDTO.getGenero())) {
-            return ResponseEntity.badRequest().body("Erro: Gênero inválido. Escolha 'Masculino' ou 'Feminino'.");
-        }
-
         return null;
     }
 
@@ -117,8 +105,22 @@ public class CadastrarUser {
         }
 
 
-
-
        return null;
+    }
+
+    private ResponseEntity<String> validateDataOfUserPREmployees(UsersDTO usersDTO){
+        if (usersRepository.existsByRg(usersDTO.getRg())){
+            return ResponseEntity.badRequest().body("Rg já registrado. Tente Novamente");
+        }
+
+        if (usersRepository.existsByCpf(usersDTO.getRg())){
+            return ResponseEntity.badRequest().body("CPF já registrado. Tente Novamente");
+        }
+
+        if (!"Masculino".equalsIgnoreCase(usersDTO.getGenero()) && !"Feminino".equalsIgnoreCase(usersDTO.getGenero())) {
+            return ResponseEntity.badRequest().body("Erro: Gênero inválido. Escolha 'Masculino' ou 'Feminino'.");
+        }
+
+        return null;
     }
 }
