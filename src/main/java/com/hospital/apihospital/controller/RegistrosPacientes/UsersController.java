@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,22 +25,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hospital.apihospital.Model.DTO.PacienteDTO;
-import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
-import com.hospital.apihospital.Model.Repository.MarcaConsultaRepository;
-import com.hospital.apihospital.Model.Repository.PacienteRepository;
+import com.hospital.apihospital.Model.DTO.UsersDTO;
+import com.hospital.apihospital.Model.Repository.UsersRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("api/v1/pacientes")
-public class PacienteController {
+public class UsersController {
 
     @Autowired
-    private PacienteRepository pr;
-    @Autowired
-    private MarcaConsultaRepository mcr;
+    private UsersRepository pr;
 
     private boolean isNumeric(String str) {
         if (str == null) {
@@ -54,12 +51,12 @@ public class PacienteController {
      * @return Uma lista de objetos PacienteDTO contendo informações dos pacientes.
      */
     @GetMapping
-    public List<PacienteDTO> listarPacientes() {
-        List<CadastrarPaciente> pacientes = pr.findAll();
-        List<PacienteDTO> pacienteDTOs = pacientes.stream()
-                .map(PacienteDTO::fromEntity)
+    public List<UsersDTO> listarPacientes() {
+        List<CadastrarUsers> pacientes = pr.findAll();
+        List<UsersDTO> usersDTOS = pacientes.stream()
+                .map(UsersDTO::fromEntity)
                 .collect(Collectors.toList());
-        return pacienteDTOs;
+        return usersDTOS;
     }
 
     /**
@@ -70,13 +67,13 @@ public class PacienteController {
      * @return Os dados do paciente se encontrado, ou um erro se não encontrado.
      */
     @PostMapping("/buscarpaciente")
-    public ResponseEntity<?> getPacienteByIdPost(@RequestBody PacienteDTO pesquisarPorIdRequest) {
+    public ResponseEntity<?> getPacienteByIdPost(@RequestBody UsersDTO pesquisarPorIdRequest) {
         Long id = pesquisarPorIdRequest.getId();
-        Optional<CadastrarPaciente> pacienteOptional = pr.findById(id);
+        Optional<CadastrarUsers> pacienteOptional = pr.findById(id);
         if (pacienteOptional.isPresent()) {
-            CadastrarPaciente cadastrarPaciente = pacienteOptional.get();
-            PacienteDTO pacienteDTO = PacienteDTO.fromEntity(cadastrarPaciente);
-            return ResponseEntity.ok(pacienteDTO);
+            CadastrarUsers CadastrarUsers = pacienteOptional.get();
+            UsersDTO usersDTO = UsersDTO.fromEntity(CadastrarUsers);
+            return ResponseEntity.ok(usersDTO);
         } else {
             System.out.println("Nada encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente não encontrado com o ID fornecido.");
@@ -92,12 +89,12 @@ public class PacienteController {
      */
     @GetMapping("/buscarpaciente/{id}")
     public ResponseEntity<?> getPacientesByIdGet(@PathVariable Long id) {
-        Optional<CadastrarPaciente> pacienteOptional = pr.findById(id);
+        Optional<CadastrarUsers> pacienteOptional = pr.findById(id);
 
         if (pacienteOptional.isPresent()) {
-            CadastrarPaciente cadastrarPaciente = pacienteOptional.get();
-            PacienteDTO pacienteDTO = PacienteDTO.fromEntity(cadastrarPaciente);
-            return ResponseEntity.ok(pacienteDTO);
+            CadastrarUsers CadastrarUsers = pacienteOptional.get();
+            UsersDTO usersDTO = UsersDTO.fromEntity(CadastrarUsers);
+            return ResponseEntity.ok(usersDTO);
         } else {
             System.out.println("Nada encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente não encontrado com o ID fornecido.");
@@ -107,14 +104,14 @@ public class PacienteController {
     /**
      * Cadastra um novo paciente.
      *
-     * @param pacienteDTO O objeto PacienteDTO contendo informações do paciente a
+     * @param usersDTO O objeto PacienteDTO contendo informações do paciente a
      *                    ser cadastrado.
      * @param result      O objeto BindingResult para validação.
      * @return Uma resposta com a mensagem de sucesso ou erro.
      */
     @PostMapping("/addpaciente")
-    public ResponseEntity<String> cadastrar(@Valid @RequestBody PacienteDTO pacienteDTO, BindingResult result,
-            HttpServletRequest httpServletRequest) {
+    public ResponseEntity<String> cadastrar(@Valid @RequestBody UsersDTO usersDTO, BindingResult result,
+                                            HttpServletRequest httpServletRequest) {
         if (result.hasErrors()) {
             // Lida com erros de validação
             StringBuilder errorMensagem = new StringBuilder("Erro de validação: ");
@@ -125,8 +122,8 @@ public class PacienteController {
         }
 
         // Validação de RG e CPF
-        boolean rgExiste = pr.existsByRg(pacienteDTO.getRg());
-        boolean cpfExiste = pr.existsByCpf(pacienteDTO.getCpf());
+        boolean rgExiste = pr.existsByRg(usersDTO.getRg());
+        boolean cpfExiste = pr.existsByCpf(usersDTO.getCpf());
 
         if (rgExiste && cpfExiste) {
             // Se ambos RG e CPF existirem, retorne um erro
@@ -138,7 +135,7 @@ public class PacienteController {
             return ResponseEntity.badRequest().body("Erro: RG e CPF já estão registrados no banco de dados.");
         }
 
-        String genero = pacienteDTO.getGenero();
+        String genero = usersDTO.getGenero();
 
         if (!"Masculino".equalsIgnoreCase(genero) && !"Feminino".equalsIgnoreCase(genero)) {
             return ResponseEntity.badRequest().body("Erro: Gênero inválido. Escolha 'Masculino' ou 'Feminino'.");
@@ -146,13 +143,13 @@ public class PacienteController {
 
         try {
             // Cria um novo paciente e o salva no banco de dados
-            CadastrarPaciente paciente = new CadastrarPaciente();
-            paciente.setNome(pacienteDTO.getNome());
-            paciente.setCpf(pacienteDTO.getCpf());
-            paciente.setRg(pacienteDTO.getRg());
-            paciente.setGenero(pacienteDTO.getGenero());
-            paciente.setDataNascimento(pacienteDTO.getDataNascimento());
-            paciente.setPlano_paciente(pacienteDTO.getPlano_paciente());
+            CadastrarUsers paciente = new CadastrarUsers();
+            paciente.setNome(usersDTO.getNome());
+            paciente.setCpf(usersDTO.getCpf());
+            paciente.setRg(usersDTO.getRg());
+            paciente.setGenero(usersDTO.getGenero());
+            paciente.setDataNascimento(usersDTO.getDataNascimento());
+            paciente.setPlano_paciente(usersDTO.getPlano_paciente());
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("America/Sao_Paulo"));
@@ -161,7 +158,7 @@ public class PacienteController {
 
             paciente.setDataRegistro(dataRegistro);
 
-            CadastrarPaciente pacienteSave = pr.save(paciente);
+            CadastrarUsers pacienteSave = pr.save(paciente);
 
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Acess-Control-Allow-Origin", "http://localhost:5173");
@@ -177,7 +174,7 @@ public class PacienteController {
     }
 
     @PutMapping("/atualizar-paciente/{id}")
-    public ResponseEntity<String> atualizarpaciente(@PathVariable Long id, @Valid @RequestBody PacienteDTO pacienteDTO,
+    public ResponseEntity<String> atualizarpaciente(@PathVariable Long id, @Valid @RequestBody UsersDTO usersDTO,
             BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder erroMsg = new StringBuilder("Erro de validação: ");
@@ -187,19 +184,19 @@ public class PacienteController {
             return ResponseEntity.badRequest().body(erroMsg.toString());
         }
 
-        Optional<CadastrarPaciente> pacienteOptional = pr.findById(id);
+        Optional<CadastrarUsers> pacienteOptional = pr.findById(id);
 
         if (pacienteOptional.isPresent()) {
-            CadastrarPaciente pacienteExistente = pacienteOptional.get();
+            CadastrarUsers pacienteExistente = pacienteOptional.get();
 
-            pacienteExistente.setNome(pacienteDTO.getNome());
-            pacienteExistente.setCpf(pacienteDTO.getCpf());
-            pacienteExistente.setRg(pacienteDTO.getRg());
-            pacienteExistente.setGenero(pacienteDTO.getGenero());
-            pacienteExistente.setDataNascimento(pacienteDTO.getDataNascimento());
-            pacienteExistente.setPlano_paciente(pacienteDTO.getPlano_paciente());
+            pacienteExistente.setNome(usersDTO.getNome());
+            pacienteExistente.setCpf(usersDTO.getCpf());
+            pacienteExistente.setRg(usersDTO.getRg());
+            pacienteExistente.setGenero(usersDTO.getGenero());
+            pacienteExistente.setDataNascimento(usersDTO.getDataNascimento());
+            pacienteExistente.setPlano_paciente(usersDTO.getPlano_paciente());
 
-            CadastrarPaciente pacienteAtualizado = pr.save(pacienteExistente);
+            CadastrarUsers pacienteAtualizado = pr.save(pacienteExistente);
 
             return ResponseEntity.ok("Paciente atualizado com sucesso ID : " + pacienteAtualizado.getId());
         } else {
@@ -216,8 +213,6 @@ public class PacienteController {
     @DeleteMapping("deletepaciente/{id}")
     public ResponseEntity<Void> deletePaciente(@PathVariable Long id) {
         try {
-            mcr.deleteByPacienteId(id);
-
             pr.deleteById(id);
 
             return ResponseEntity.ok().build();
@@ -233,9 +228,9 @@ public class PacienteController {
     @DeleteMapping("/freekill")
     public ResponseEntity<String> deletePacientesComCamposNulos() {
         try {
-            List<CadastrarPaciente> pacientes = pr.findAll();
-            for (CadastrarPaciente paciente : pacientes) {
-                mcr.deleteAll();
+            List<CadastrarUsers> pacientes = pr.findAll();
+            for (CadastrarUsers paciente : pacientes) {
+                pr.deleteAll();
             }
             pr.deleteAll(pacientes);
 

@@ -1,15 +1,18 @@
 package com.hospital.apihospital.Model.Entity;
 
 import com.hospital.apihospital.Model.Enum.CargoEnum;
+import com.hospital.apihospital.Model.Enum.RoleEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.List;
+
 @Entity
-@Table(name = "cadastrarFuncionario")
+@Table(name = "cadastrarUsers")
 @Data
-public class CadastrarFuncionario {
+public class CadastrarUsers {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -35,49 +38,27 @@ public class CadastrarFuncionario {
     @NotBlank(message = "Genero obrigatorio")
     private String genero;
 
-    @Column(name = "cargo")
-    @Enumerated(EnumType.STRING)
+    @Column(name = "plano_paciente", length = 50)
     @NotBlank
-    private CargoEnum cargo;
-
-    @Column(name = "salario")
-    @NotBlank
-    private float salario;
+    private String plano_paciente;
 
     @Column(name = "data_registro")
     @Temporal(TemporalType.TIMESTAMP)
     @NotBlank(message = "A data de registro é obrigatória")
     private Date dataRegistro;
 
-    public void setCargo(CargoEnum cargo){
-        this.cargo = cargo;
+    @NotBlank
+    @Column(name = "cargo")
+    @Enumerated(EnumType.STRING)
+    private CargoEnum cargo;
 
-        if (cargo != null){
-            switch (cargo){
-                case GERENTE:
-                    this.salario = 5000.0f;
-                    break;
-                case MEDICO:
-                    this.salario = 7000.0f;
-                    break;
-                case ADMINISTRATIVO:
-                    this.salario = 3000.0f;
-                    break;
-                case FAXINEIRO:
-                    this.salario = 1200.0f;
-                    break;
-                case ENFERMEIRO:
-                    this.salario = 4000.0f;
-                    break;
-                case OPERARIO:
-                    this.salario = 1200.0f;
-                    break;
-                default:
-                    this.salario = 0.0f;
-            }
-        }
-    }
+    @Column(name = "salario")
+    @NotBlank
+    private Double salario;
 
+    @Column(name = "role", length = 20)
+    @NotBlank(message = "A role é obrigatória")
+    private RoleEnum role;
 
 
 }

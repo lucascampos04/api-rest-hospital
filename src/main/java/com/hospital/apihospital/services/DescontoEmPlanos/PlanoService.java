@@ -1,6 +1,6 @@
 package com.hospital.apihospital.services.DescontoEmPlanos;
 
-import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
+import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class PlanoService {
     @Value("${plano.vip}")
     private double descontoPlanoVip;
 
-    public double calcularValorComDesconto(CadastrarPaciente paciente, double valorConsulta) {
+    public double calcularValorComDesconto(CadastrarUsers paciente, double valorConsulta) {
         String tipoPlano = paciente.getPlano_paciente();
 
         switch (tipoPlano.toLowerCase()) {

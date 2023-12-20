@@ -1,6 +1,6 @@
 package com.hospital.apihospital.Model.Repository;
 
-import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
+import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,22 +10,22 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PacienteRepository extends JpaRepository<CadastrarPaciente, Long> {
+public interface UsersRepository extends JpaRepository<CadastrarUsers, Long> {
     boolean existsByCpf(String cpf);
     boolean existsByRg(String rg);
-    Optional<CadastrarPaciente>  findByRg(String rg);
-    Optional<CadastrarPaciente>  findByCpf(String rg);
+    Optional<CadastrarUsers>  findByRg(String rg);
+    Optional<CadastrarUsers>  findByCpf(String rg);
     @Query("SELECT p " +
-            "FROM CadastrarPaciente p " +
+            "FROM CadastrarUsers p " +
             "WHERE " +
             "REPLACE(p.nome, ' ', '-' ) = :nomeFormatado")
-    Optional<CadastrarPaciente>  findByNomeFormatado(@Param("nomeFormatado") String nomeFormatado);
+    Optional<CadastrarUsers>  findByNomeFormatado(@Param("nomeFormatado") String nomeFormatado);
     @Query("SELECT p " +
-            "FROM CadastrarPaciente p " +
+            "FROM CadastrarUsers p " +
             "WHERE (p.nome IS NULL OR p.nome = '' OR p.rg IS NULL OR p.rg = '' OR p.cpf IS NULL OR p.cpf = '')")
-    List<CadastrarPaciente> findByCamposNulos();
+    List<CadastrarUsers> findByCamposNulos();
 
-    Optional<CadastrarPaciente> findById(Long id);
+    Optional<CadastrarUsers> findById(Long id);
 
     void deleteById(Long id);
 }
