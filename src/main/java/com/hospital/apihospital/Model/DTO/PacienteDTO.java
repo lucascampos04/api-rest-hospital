@@ -2,10 +2,10 @@ package com.hospital.apihospital.Model.DTO;
 
 import com.hospital.apihospital.Model.Entity.CadastrarPaciente;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -35,9 +35,7 @@ public class PacienteDTO {
     }
 
 
-    public PacienteDTO(Long id, String nome) {
-        this(id, nome, null, null, null, null, null, null);
-    }
+
 
     public PacienteDTO(Long id, String nome, String cpf, String rg, Date dataNascimento, String genero, Date dataRegistro, String plano_paciente) {
         this.id = id;
