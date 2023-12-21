@@ -28,4 +28,6 @@ public interface UsersRepository extends JpaRepository<CadastrarUsers, Long> {
     Optional<CadastrarUsers> findById(Long id);
 
     void deleteById(Long id);
+
+    boolean existsByEmail(String email);
 }
