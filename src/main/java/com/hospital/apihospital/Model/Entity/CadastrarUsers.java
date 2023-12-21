@@ -42,6 +42,14 @@ public class CadastrarUsers {
     @NotBlank
     private String plano_paciente;
 
+    @Column(name = "email")
+    @NotBlank
+    private String email;
+
+    @Column(name = "telefone")
+    @NotBlank
+    private String telefone;
+
     @Column(name = "data_registro")
     @Temporal(TemporalType.TIMESTAMP)
     @NotBlank(message = "A data de registro é obrigatória")
@@ -59,6 +67,7 @@ public class CadastrarUsers {
     @Column(name = "role", length = 20)
     @NotBlank(message = "A role é obrigatória")
     private RoleEnum role;
+
 
 
 }

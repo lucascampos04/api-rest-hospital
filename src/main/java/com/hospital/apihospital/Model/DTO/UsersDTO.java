@@ -6,6 +6,7 @@ import com.hospital.apihospital.Model.Enum.RoleEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -22,7 +23,23 @@ public class UsersDTO {
     private RoleEnum role;
     private CargoEnum cargo;
     private Double salario;
+    private String email;
+    private String telefone;
 
+    public UsersDTO(Long id,
+                    String nome,
+                    String cpf,
+                    String rg,
+                    Date dataNascimento,
+                    String genero,
+                    String email,
+                    String telefone,
+                    Date dataRegistro,
+                    String planoPaciente,
+                    RoleEnum role,
+                    CargoEnum cargo,
+                    Double salario) {
+    }
 
     public static UsersDTO fromEntity(CadastrarUsers users) {
         return new UsersDTO(
@@ -32,6 +49,8 @@ public class UsersDTO {
                         users.getRg(),
                         users.getDataNascimento(),
                         users.getGenero(),
+                        users.getEmail(),
+                        users.getTelefone(),
                         users.getDataRegistro(),
                         users.getPlano_paciente(),
                 users.getRole(),
@@ -43,7 +62,20 @@ public class UsersDTO {
 
 
 
-    public UsersDTO(Long id, String nome, String cpf, String rg, Date dataNascimento, String genero, Date dataRegistro, String plano_paciente, RoleEnum role, CargoEnum cargo, Double salario) {
+
+    public UsersDTO(Long id,
+                    String nome,
+                    String cpf,
+                    String rg,
+                    Date dataNascimento,
+                    String genero,
+                    @NotBlank Date dataRegistro,
+                    String plano_paciente,
+                    @NotBlank(message = "A data de registro é obrigatória")
+                    RoleEnum role, @NotBlank CargoEnum cargo, @NotBlank(message = "A role é obrigatória")
+                    Double salario, @NotBlank
+                    String email,
+                    String telefone) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
@@ -55,9 +87,8 @@ public class UsersDTO {
         this.cargo = cargo;
         this.role = role;
         this.salario = salario;
+        this.email = email;
+        this.telefone = telefone;
     }
 
-    public Long getId() {
-        return id;
-    }
 }
