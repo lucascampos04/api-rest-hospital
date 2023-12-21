@@ -4,6 +4,7 @@ import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
+import com.hospital.apihospital.Model.Repository.AreaWorkModelRepository;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class CadastrarUserService {
     @Autowired
     private UsersRepository usersRepository;
 
+    @Autowired
+    private AreaWorkModelRepository areaWorkModelRepository;
+
     /**
      * Realiza o cadastro de um paciente ou funcionário.
      *
@@ -43,6 +47,11 @@ public class CadastrarUserService {
             ResponseEntity<String> validationErros = handlingErros(result);
             ResponseEntity<String> validationDateNascimento = validationDataNascimentoOfEmployees(usersDTO);
             ResponseEntity<String> validationData = validateDataEmployees(usersDTO);
+            ResponseEntity<String> validationAreaWork = validateAreaWorkModel(usersDTO);
+
+            if (validationAreaWork != null) {
+                return validationAreaWork;
+            }
 
             if (validationErros != null) {
                 return validationErros;
@@ -62,12 +71,25 @@ public class CadastrarUserService {
 
             CadastrarUsers user = getCadastrarUsers(usersDTO);
 
+
             CadastrarUsers userSave = usersRepository.save(user);
 
             return ResponseEntity.ok().body("Paciente cadastrado com sucesso\nID : " + userSave.getId() + " ROLE : " + userSave.getRole());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+
+    private ResponseEntity<String> validateAreaWorkModel(UsersDTO usersDTO ){
+        if (usersDTO.getAreaWorkModel() == null){
+            return ResponseEntity.badRequest().body("Erro: Área de trabalho é obrigatorio para funcionario");
+        }
+
+        if (usersDTO.getAreaWorkModel().getFormacao() == null || usersDTO.getAreaWorkModel().getSetor() == null) {
+            return ResponseEntity.badRequest().body("Erro: Formação e Setor são obrigatórios para funcionários.");
+        }
+        return null;
     }
 
     /**
@@ -92,11 +114,27 @@ public class CadastrarUserService {
         user.setTelefone(usersDTO.getTelefone());
         user.setDataRegistro(getCurrentDateInBrasilia());
 
-        if (usersDTO.getCargo() == null){
-            user.setRole(RoleEnum.PACIENTE);
+        if (usersDTO.getCargo() != null){
+            switch (usersDTO.getCargo()){
+                case MEDICO:
+                case GERENTE:
+                case ADMINISTRATIVO:
+                case ENFERMEIRO:
+                case FAXINEIRO:
+                case OPERARIO:
+                    System.out.println("CASES");
+                    user.setRole(RoleEnum.FUNCIONARIO);
+                    break;
+                default:
+                    System.out.println("DEFAULT");
+                    user.setRole(RoleEnum.PACIENTE);
+            }
         } else {
-            user.setRole(RoleEnum.FUNCIONARIO);
+            System.out.println("ELSE");
+            user.setRole(RoleEnum.PACIENTE);
         }
+
+        System.out.println(user.getRole());
         return user;
     }
 
@@ -175,7 +213,7 @@ public class CadastrarUserService {
         }
 
         if (usersRepository.existsByEmail(usersDTO.getEmail())) {
-            return ResponseEntity.badRequest().body("CPF já registrado. Tente Novamente");
+            return ResponseEntity.badRequest().body("EMAIL já registrado. Tente Novamente");
         }
 
         if (usersDTO.getNome().matches(".*\\d+.*")){

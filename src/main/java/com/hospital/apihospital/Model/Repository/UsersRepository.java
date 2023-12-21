@@ -30,4 +30,7 @@ public interface UsersRepository extends JpaRepository<CadastrarUsers, Long> {
     void deleteById(Long id);
 
     boolean existsByEmail(String email);
+
+    @Query("SELECT u FROM CadastrarUsers u LEFT JOIN FETCH u.areaWorkModel")
+    List<CadastrarUsers> findAllWithAreaWorkModel();
 }

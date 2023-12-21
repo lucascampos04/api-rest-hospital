@@ -14,6 +14,8 @@ public class ListUserServices {
     @Autowired
     private UsersRepository usersRepository;
 
+
+
     /**
      * Obtém a lista de usuários.
      *
@@ -21,7 +23,7 @@ public class ListUserServices {
      */
     public List<UsersDTO> listUsers(){
         try{
-            List<CadastrarUsers> users = usersRepository.findAll();
+            List<CadastrarUsers> users = usersRepository.findAllWithAreaWorkModel();
             System.out.println("Tamanho da lista de usuários: " + users.size());
             return users.stream()
                     .map(UsersDTO::fromEntity)

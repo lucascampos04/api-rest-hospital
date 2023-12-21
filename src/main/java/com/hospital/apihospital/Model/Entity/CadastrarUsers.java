@@ -2,6 +2,7 @@ package com.hospital.apihospital.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.hospital.apihospital.Model.Entity.AreasDoctorWorksModel.AreaWorkModel;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import jakarta.persistence.*;
@@ -67,12 +68,10 @@ public class CadastrarUsers {
 
     @Column(name = "cargo")
     @Enumerated(EnumType.STRING)
-    @JsonIgnore
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private CargoEnum cargo;
 
     @Column(name = "salario")
-    @JsonIgnore
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double salario;
 
@@ -80,5 +79,9 @@ public class CadastrarUsers {
     @NotBlank(message = "A role é obrigatória")
     @Pattern(regexp = "^[^0-9]+$", message = "O role não deve conter números")
     private RoleEnum role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private AreaWorkModel areaWorkModel;
 
 }
