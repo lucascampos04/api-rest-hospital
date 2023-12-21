@@ -1,4 +1,4 @@
-package com.hospital.apihospital.services.CadastroService;
+package com.hospital.apihospital.services.UsersServices.CadastroService.CadastroService;
 
 import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;

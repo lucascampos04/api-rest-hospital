@@ -1,43 +1,37 @@
 package com.hospital.apihospital.controller.RegistrosPacientes;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
-
 import javax.validation.Valid;
 
-import com.hospital.apihospital.Model.Entity.CadastrarUsers;
-import com.hospital.apihospital.services.CadastroService.CadastrarUserService;
+import com.hospital.apihospital.services.UsersServices.CadastroService.CadastroService.CadastrarUserService;
+import com.hospital.apihospital.services.UsersServices.ListUsersServices.ListUserServices;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.hospital.apihospital.Model.DTO.UsersDTO;
-import com.hospital.apihospital.Model.Repository.UsersRepository;
 
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("api/v1/pacientes")
+@RequestMapping("api/v1/usuarios")
 public class UsersController {
 
     @Autowired
     private CadastrarUserService cadastrarUserService;
+
+    @Autowired
+    private ListUserServices listUserServices;
+
+    @GetMapping("/list/users")
+    private ResponseEntity<List<UsersDTO>> listaUsuarios(){
+        List<UsersDTO> usuarios = listUserServices.listUsers();
+        return ResponseEntity.ok().body(usuarios);
+    }
+
 
     /**
      * Cadastra um novo paciente.

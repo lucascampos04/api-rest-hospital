@@ -1,5 +1,6 @@
 package com.hospital.apihospital.Model.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import jakarta.persistence.*;
@@ -55,13 +56,13 @@ public class CadastrarUsers {
     @NotBlank(message = "A data de registro é obrigatória")
     private Date dataRegistro;
 
-    @NotBlank
+    @JsonIgnore
     @Column(name = "cargo")
     @Enumerated(EnumType.STRING)
     private CargoEnum cargo;
 
     @Column(name = "salario")
-    @NotBlank
+    @JsonIgnore
     private Double salario;
 
     @Column(name = "role", length = 20)
