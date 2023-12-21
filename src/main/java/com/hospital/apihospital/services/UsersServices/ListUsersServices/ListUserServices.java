@@ -22,6 +22,7 @@ public class ListUserServices {
     public List<UsersDTO> listUsers(){
         try{
             List<CadastrarUsers> users = usersRepository.findAll();
+            System.out.println("Tamanho da lista de usuários: " + users.size());
             return users.stream()
                     .map(UsersDTO::fromEntity)
                     .collect(Collectors.toList());

@@ -40,15 +40,10 @@ public class CadastrarUserService {
     public ResponseEntity<String> cadastrarPaciente(@Valid @RequestBody UsersDTO usersDTO, BindingResult result) {
         try {
             ResponseEntity<String> validationResult = validateDataOfUserORemployees(usersDTO);
-            ResponseEntity<String> validationResultEmployees = validateRoleIsUserOrEmployees(usersDTO);
             ResponseEntity<String> validationErros = handlingErros(result);
 
-            if (validationErros != null){
+            if (validationErros != null) {
                 return validationErros;
-            }
-
-            if (validationResultEmployees != null) {
-                return validationResultEmployees;
             }
 
             if (validationResult != null) {
@@ -58,7 +53,6 @@ public class CadastrarUserService {
             CadastrarUsers user = getCadastrarUsers(usersDTO);
 
             CadastrarUsers userSave = usersRepository.save(user);
-
 
             return ResponseEntity.ok().body("Paciente cadastrado com sucesso\nID : " + userSave.getId() + " ROLE : " + userSave.getRole());
         } catch (Exception e) {
@@ -77,57 +71,25 @@ public class CadastrarUserService {
         CadastrarUsers user = new CadastrarUsers();
         user.setNome(usersDTO.getNome());
         user.setCpf(usersDTO.getCpf());
-        user.setRg(user.getRg());
+        user.setRg(usersDTO.getRg());
         user.setGenero(usersDTO.getGenero());
         user.setCargo(usersDTO.getCargo());
-        user.setPlano_paciente(user.getPlano_paciente());
+        user.setPlano_paciente(usersDTO.getPlano_paciente());
         user.setDataNascimento(usersDTO.getDataNascimento());
         user.setEmail(usersDTO.getEmail());
         user.setRole(usersDTO.getRole());
         user.setSalario(usersDTO.getSalario());
         user.setTelefone(usersDTO.getTelefone());
         user.setDataRegistro(getCurrentDateInBrasilia());
+
+        if (usersDTO.getCargo() == null){
+            user.setRole(RoleEnum.PACIENTE);
+        } else {
+            user.setRole(RoleEnum.FUNCIONARIO);
+        }
         return user;
     }
 
-    /**
-     * Valida se a role é de um usuário ou funcionário.
-     *
-     * @param usersDTO Objeto contendo os dados do usuário ou funcionário.
-     * @return ResponseEntity contendo uma mensagem de sucesso ou erro.
-     */
-    private ResponseEntity<String> validateRoleIsUserOrEmployees(UsersDTO usersDTO) {
-        CargoEnum cargo = usersDTO.getCargo();
-        RoleEnum role = usersDTO.getRole();
-
-        if (role != null) {
-            // verificação se está sendo inserido um paciente
-            if (cargo == null) {
-                if (RoleEnum.PACIENTE.equals(role)) {
-                    return ResponseEntity.ok().build();
-                }
-            }
-
-            // verificação se está sendo inserido um funcionário
-            if (cargo != null) {
-                if (RoleEnum.FUNCIONARIO.equals(role)) {
-                    return ResponseEntity.ok().build();
-                }
-
-                ResponseEntity<String> validateEmployeesFinally = validateDataEmployees(usersDTO);
-                ResponseEntity<String> validationDataEmployees = validationDataNascimentoOfEmployees(usersDTO);
-
-                try {
-                    return validateEmployeesFinally;
-                } catch (Exception e) {
-                    return ResponseEntity.badRequest().body("Erro ao validar funcionario");
-                }
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Erro: Role é obrigatória");
-        }
-        return null;
-    }
 
     /**
      * Valida dados específicos de funcionários, como cargo e salário.
@@ -193,7 +155,7 @@ public class CadastrarUserService {
             return ResponseEntity.badRequest().body("Rg já registrado. Tente Novamente");
         }
 
-        if (usersRepository.existsByCpf(usersDTO.getRg())) {
+        if (usersRepository.existsByCpf(usersDTO.getCpf())) {
             return ResponseEntity.badRequest().body("CPF já registrado. Tente Novamente");
         }
 
@@ -249,7 +211,7 @@ public class CadastrarUserService {
      * @param result Resultado da validação do Spring.
      * @return ResponseEntity contendo mensagens de erro, se houver.
      */
-    private ResponseEntity<String> handlingErros(BindingResult result){
+    private ResponseEntity<String> handlingErros(BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder errorMensagem = new StringBuilder("Erro de validação: ");
             result.getAllErrors().forEach(error -> {

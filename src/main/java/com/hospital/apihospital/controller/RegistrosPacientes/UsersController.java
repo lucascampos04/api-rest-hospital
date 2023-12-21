@@ -41,11 +41,12 @@ public class UsersController {
      * @param result      O objeto BindingResult para validação.
      * @return Uma resposta com a mensagem de sucesso ou erro.
      */
-    @PostMapping("/addpaciente")
+    @PostMapping("/add/users")
     public ResponseEntity<String> cadastrar(@Valid @RequestBody UsersDTO usersDTO, BindingResult result) {
         ResponseEntity<String> response = cadastrarUserService.cadastrarPaciente(usersDTO, result);
         if (response.getStatusCode() == HttpStatus.OK){
             return ResponseEntity.ok().body(response.getBody());
+
         } else {
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
