@@ -41,9 +41,19 @@ public class CadastrarUserService {
         try {
             ResponseEntity<String> validationResult = validateDataOfUserORemployees(usersDTO);
             ResponseEntity<String> validationErros = handlingErros(result);
+            ResponseEntity<String> validationDateNascimento = validationDataNascimentoOfEmployees(usersDTO);
+            ResponseEntity<String> validationData = validateDataEmployees(usersDTO);
 
             if (validationErros != null) {
                 return validationErros;
+            }
+
+            if (validationData != null){
+                return validationData;
+            }
+
+            if (validationDateNascimento != null){
+                return validationDateNascimento;
             }
 
             if (validationResult != null) {
@@ -102,45 +112,42 @@ public class CadastrarUserService {
         Double salario = usersDTO.getSalario();
 
         // validando cargo e salario.
-        if (salario == null) {
-            return ResponseEntity.badRequest().body("Erro: Salário é Obrigatório");
+        if (cargo != null) {
+            switch (cargo) {
+                case GERENTE:
+                    if (salario < 5000.0) {
+                        return ResponseEntity.badRequest().body("Erro: Gerentes devem ter um salário mínimo de 5000.0.");
+                    }
+                    break;
+                case MEDICO:
+                    if (salario < 10000.0) {
+                        return ResponseEntity.badRequest().body("Erro: Médicos devem ter um salário mínimo de 10000.0.");
+                    }
+                    break;
+                case ADMINISTRATIVO:
+                    if (salario < 3000.0) {
+                        return ResponseEntity.badRequest().body("Erro: Administradores e funcionários relacionados ao RH devem ter um salário mínimo de 3000.0.");
+                    }
+                    break;
+                case ENFERMEIRO:
+                    if (salario < 2500.0) {
+                        return ResponseEntity.badRequest().body("Erro: Enfermeiros devem ter um salário mínimo de 2500.0.");
+                    }
+                    break;
+                case FAXINEIRO:
+                    if (salario < 2000.0) {
+                        return ResponseEntity.badRequest().body("Erro: Faxineiros devem ter um salário mínimo de 2000.0.");
+                    }
+                    break;
+                case OPERARIO:
+                    if (salario < 2000.0) {
+                        return ResponseEntity.badRequest().body("Erro: Operários devem ter um salário mínimo de 2000.0.");
+                    }
+                    break;
+                default:
+                    return ResponseEntity.notFound().build();
+            }
         }
-
-        switch (cargo) {
-            case GERENTE:
-                if (salario < 5000.0) {
-                    return ResponseEntity.badRequest().body("Erro: Gerentes devem ter um salário mínimo de 5000.0.");
-                }
-                break;
-            case MEDICO:
-                if (salario < 10000.0) {
-                    return ResponseEntity.badRequest().body("Erro: Médicos devem ter um salário mínimo de 10000.0.");
-                }
-                break;
-            case ADMINISTRATIVO:
-                if (salario < 3000.0) {
-                    return ResponseEntity.badRequest().body("Erro: Administradores e funcionários relacionados ao RH devem ter um salário mínimo de 3000.0.");
-                }
-                break;
-            case ENFERMEIRO:
-                if (salario < 2500.0) {
-                    return ResponseEntity.badRequest().body("Erro: Enfermeiros devem ter um salário mínimo de 2500.0.");
-                }
-                break;
-            case FAXINEIRO:
-                if (salario < 2000.0) {
-                    return ResponseEntity.badRequest().body("Erro: Faxineiros devem ter um salário mínimo de 2000.0.");
-                }
-                break;
-            case OPERARIO:
-                if (salario < 2000.0) {
-                    return ResponseEntity.badRequest().body("Erro: Operários devem ter um salário mínimo de 2000.0.");
-                }
-                break;
-            default:
-                return ResponseEntity.notFound().build();
-        }
-
         return null;
     }
 
@@ -155,14 +162,30 @@ public class CadastrarUserService {
             return ResponseEntity.badRequest().body("Rg já registrado. Tente Novamente");
         }
 
+        if (usersDTO.getRg().length() > 15) {
+            return ResponseEntity.badRequest().body("Erro: O RG não pode ter mais de 15 caracteres.");
+        }
+
         if (usersRepository.existsByCpf(usersDTO.getCpf())) {
             return ResponseEntity.badRequest().body("CPF já registrado. Tente Novamente");
         }
 
+        if (usersDTO.getCpf().length() > 20) {
+            return ResponseEntity.badRequest().body("Erro: O CPF não pode ter mais de 20 caracteres.");
+        }
+
+        if (usersRepository.existsByEmail(usersDTO.getEmail())) {
+            return ResponseEntity.badRequest().body("CPF já registrado. Tente Novamente");
+        }
+
+        if (usersDTO.getNome().matches(".*\\d+.*")){
+            return ResponseEntity.badRequest().body("Erro: O nome não pode conter números");
+        }
+
+
         if (!"Masculino".equalsIgnoreCase(usersDTO.getGenero()) && !"Feminino".equalsIgnoreCase(usersDTO.getGenero())) {
             return ResponseEntity.badRequest().body("Erro: Gênero inválido. Escolha 'Masculino' ou 'Feminino'.");
         }
-
         return null;
     }
 
@@ -182,7 +205,7 @@ public class CadastrarUserService {
             Calendar calendarNascimento = Calendar.getInstance();
             calendarNascimento.setTime(dataNascimento);
 
-            if (calendarNascimento.before(calendarLimit)) {
+            if (calendarNascimento.after(calendarLimit)) {
                 return ResponseEntity.badRequest().body("Erro: Não é possível inserir um funcionário menor de idade");
             }
             return null;
