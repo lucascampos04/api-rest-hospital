@@ -1,8 +1,6 @@
 package com.hospital.apihospital.Model.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.hospital.apihospital.Model.Entity.AreasDoctorWorksModel.AreaWorkModel;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import jakarta.persistence.*;
@@ -14,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "cadastrarUsers")
@@ -80,8 +79,6 @@ public class CadastrarUsers {
     @Pattern(regexp = "^[^0-9]+$", message = "O role não deve conter números")
     private RoleEnum role;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private AreaWorkModel areaWorkModel;
-
+    @OneToMany(mappedBy = "cadastrarUsers", cascade = CascadeType.ALL)
+    private List<MarcaConsultaEntity> marcaConsultas;
 }

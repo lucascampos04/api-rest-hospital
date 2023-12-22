@@ -4,7 +4,6 @@ import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
-import com.hospital.apihospital.Model.Repository.AreaWorkModelRepository;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +29,6 @@ public class CadastrarUserService {
     @Autowired
     private UsersRepository usersRepository;
 
-    @Autowired
-    private AreaWorkModelRepository areaWorkModelRepository;
 
     /**
      * Realiza o cadastro de um paciente ou funcionário.
@@ -43,15 +40,12 @@ public class CadastrarUserService {
     @Transactional
     public ResponseEntity<String> cadastrarPaciente(@Valid @RequestBody UsersDTO usersDTO, BindingResult result) {
         try {
+            CadastrarUsers userEntity = new CadastrarUsers();
+
             ResponseEntity<String> validationResult = validateDataOfUserORemployees(usersDTO);
             ResponseEntity<String> validationErros = handlingErros(result);
             ResponseEntity<String> validationDateNascimento = validationDataNascimentoOfEmployees(usersDTO);
             ResponseEntity<String> validationData = validateDataEmployees(usersDTO);
-            ResponseEntity<String> validationAreaWork = validateAreaWorkModel(usersDTO);
-
-            if (validationAreaWork != null) {
-                return validationAreaWork;
-            }
 
             if (validationErros != null) {
                 return validationErros;
@@ -80,18 +74,6 @@ public class CadastrarUserService {
         }
     }
 
-
-    private ResponseEntity<String> validateAreaWorkModel(UsersDTO usersDTO ){
-        if (usersDTO.getAreaWorkModel() == null){
-            return ResponseEntity.badRequest().body("Erro: Área de trabalho é obrigatorio para funcionario");
-        }
-
-        if (usersDTO.getAreaWorkModel().getFormacao() == null || usersDTO.getAreaWorkModel().getSetor() == null) {
-            return ResponseEntity.badRequest().body("Erro: Formação e Setor são obrigatórios para funcionários.");
-        }
-        return null;
-    }
-
     /**
      * Obtém um objeto CadastrarUsers a partir dos dados do DTO.
      *
@@ -106,13 +88,14 @@ public class CadastrarUserService {
         user.setRg(usersDTO.getRg());
         user.setGenero(usersDTO.getGenero());
         user.setCargo(usersDTO.getCargo());
-        user.setPlano_paciente(usersDTO.getPlano_paciente());
+        user.setPlano_paciente(usersDTO.getPlanoPaciente());
         user.setDataNascimento(usersDTO.getDataNascimento());
         user.setEmail(usersDTO.getEmail());
         user.setRole(usersDTO.getRole());
         user.setSalario(usersDTO.getSalario());
         user.setTelefone(usersDTO.getTelefone());
         user.setDataRegistro(getCurrentDateInBrasilia());
+
 
         if (usersDTO.getCargo() != null){
             switch (usersDTO.getCargo()){

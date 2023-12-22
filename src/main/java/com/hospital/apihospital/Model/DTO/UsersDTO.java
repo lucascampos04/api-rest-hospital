@@ -1,12 +1,10 @@
 package com.hospital.apihospital.Model.DTO;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.hospital.apihospital.Model.Entity.AreasDoctorWorksModel.AreaWorkModel;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
-import jakarta.persistence.*;
+import jakarta.persistence.Enumerated;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,74 +22,47 @@ public class UsersDTO {
     @Pattern(regexp = "^[^0-9]+$", message = "O nome não deve conter números")
     private String nome;
 
-    @Column(name = "cpf", length = 19, unique = true)
     @NotBlank(message = "O CPF é obrigatório")
     private String cpf;
 
-    @Column(name = "rg", length = 15, unique = true)
     @NotBlank(message = "O RG é obrigatório")
     private String rg;
 
-    @Column(name = "data_nascimento")
-    @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotBlank(message = "A data de nascimento é obrigatória")
     private Date dataNascimento;
 
-    @Column(name = "genero", length = 30)
     @NotBlank(message = "Genero obrigatório")
     @Pattern(regexp = "^[^0-9]+$", message = "O genero não deve conter números")
     private String genero;
 
-    @Column(name = "email")
     @NotBlank
     private String email;
 
-    @Column(name = "telefone")
     @NotBlank
     private String telefone;
 
-    @Column(name = "data_registro")
-    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @NotBlank(message = "A data de registro é obrigatória")
     private Date dataRegistro;
 
-    @Column(name = "plano_paciente", length = 50)
     @NotBlank
-    private String plano_paciente;
+    private String planoPaciente;
 
-    @Column(name = "cargo")
-    @Enumerated(EnumType.STRING)
+    @Enumerated
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private CargoEnum cargo;
 
-    @Column(name = "salario")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double salario;
 
-    @Column(name = "role", length = 20)
     @NotBlank(message = "A role é obrigatória")
     @Pattern(regexp = "^[^0-9]+$", message = "O role não deve conter números")
     private RoleEnum role;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private AreaWorkDto areaWorkModel;
-
-    public UsersDTO(Long id,
-                    String nome,
-                    String cpf,
-                    String rg,
-                    Date dataNascimento,
-                    String genero,
-                    String email,
-                    String telefone,
-                    Date dataRegistro,
-                    String planoPaciente,
-                    RoleEnum role,
-                    CargoEnum cargo,
-                    Double salario
-    ) {
+    public UsersDTO(Long id, String nome, String cpf, String rg, Date dataNascimento, String genero,
+                    String email, String telefone, Date dataRegistro, String planoPaciente, RoleEnum role,
+                    CargoEnum cargo, Double salario) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
@@ -101,7 +72,7 @@ public class UsersDTO {
         this.email = email;
         this.telefone = telefone;
         this.dataRegistro = dataRegistro;
-        this.plano_paciente = planoPaciente;
+        this.planoPaciente = planoPaciente;
         this.role = role;
         this.cargo = cargo;
         this.salario = salario;
@@ -124,18 +95,6 @@ public class UsersDTO {
                 users.getSalario()
         );
 
-        if (RoleEnum.PACIENTE.equals(users.getRole())) {
-            usersDTO.setCargo(null);
-            usersDTO.setSalario(null);
-        } else if (RoleEnum.FUNCIONARIO.equals(users.getRole())) {
-            if (CargoEnum.MEDICO.equals(users.getCargo())) {
-                if (users.getAreaWorkModel() != null) {
-                    usersDTO.setAreaWorkModel(AreaWorkDto.fromEntity(users.getAreaWorkModel()));
-                }
-            }
-        }
-
         return usersDTO;
     }
-
 }

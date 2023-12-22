@@ -32,7 +32,6 @@ public class UsersController {
         return ResponseEntity.ok().body(usuarios);
     }
 
-
     /**
      * Cadastra um novo paciente.
      *

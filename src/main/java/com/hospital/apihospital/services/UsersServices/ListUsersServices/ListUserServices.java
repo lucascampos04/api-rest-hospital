@@ -14,21 +14,20 @@ public class ListUserServices {
     @Autowired
     private UsersRepository usersRepository;
 
-
-
     /**
      * Obtém a lista de usuários.
      *
      * @return Uma lista de objetos UsersDTO contendo informações dos usuários.
      */
-    public List<UsersDTO> listUsers(){
-        try{
-            List<CadastrarUsers> users = usersRepository.findAllWithAreaWorkModel();
+    public List<UsersDTO> listUsers() {
+        try {
+            List<CadastrarUsers> users = usersRepository.findAll();
             System.out.println("Tamanho da lista de usuários: " + users.size());
+
             return users.stream()
-                    .map(UsersDTO::fromEntity)
+                    .map(user -> UsersDTO.fromEntity(user))
                     .collect(Collectors.toList());
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao listar usuários. ", e);
         }
