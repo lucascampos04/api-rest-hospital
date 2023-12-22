@@ -3,6 +3,7 @@ package com.hospital.apihospital.controller.RegistroDeConsulta;
 import com.hospital.apihospital.Model.DTO.MarcaConsultaDTO;
 import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.services.ConsultasServices.CadastroConsulta.CadastroConsultaService;
+import com.hospital.apihospital.services.ConsultasServices.ListConsulta.ListConsultaServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,12 @@ import java.util.List;
 public class ConsultaController {
     @Autowired
     private CadastroConsultaService cadastroConsultaService;
+
+    @Autowired
+    private ListConsultaServices listConsultas;
     @GetMapping("")
     private ResponseEntity<List<MarcaConsultaDTO>> listaUsuarios(){
-        List<MarcaConsultaDTO> usuarios = cadastroConsultaService.listConsultas();
+        List<MarcaConsultaDTO> usuarios = listConsultas.listConsultas();
         return ResponseEntity.ok().body(usuarios);
     }
     @PostMapping("/add/consulta")
