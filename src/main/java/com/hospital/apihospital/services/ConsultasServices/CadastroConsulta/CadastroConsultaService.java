@@ -6,6 +6,7 @@ import com.hospital.apihospital.Model.Entity.MarcaConsultaEntity;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import com.hospital.apihospital.Model.Repository.MarcaConsultaRepository;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
+import com.hospital.apihospital.services.DescontoEmPlanos.PlanoService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,9 @@ public class CadastroConsultaService {
     @Autowired
     private UsersRepository usersRepository;
 
+    @Autowired
+    private PlanoService planoService;
+
     @Transactional
     public ResponseEntity<String> cadastrarConsulta(@Valid MarcaConsultaDTO marcaConsultaDTO, BindingResult result) {
         if (result.hasErrors()) {
@@ -31,9 +35,11 @@ public class CadastroConsultaService {
         }
 
         try {
-            MarcaConsultaEntity marcaConsultaEntity = criarConsultaEntity(marcaConsultaDTO);
-            descontarValorConsulta(usuarioAssociado(marcaConsultaDTO), marcaConsultaDTO.getValor());
+            CadastrarUsers usuario = usuarioAssociado(marcaConsultaDTO);
 
+            double valorConsultaComDesconto = planoService.calcularValorComDesconto(usuario, marcaConsultaDTO.getValor());
+            MarcaConsultaEntity marcaConsultaEntity = criarConsultaEntity(marcaConsultaDTO, valorConsultaComDesconto);
+            descontarValorConsulta(usuario, marcaConsultaDTO.getValor());
             marcaConsultaRepository.save(marcaConsultaEntity);
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Consulta cadastrada com sucesso");
@@ -42,11 +48,11 @@ public class CadastroConsultaService {
         }
     }
 
-    private MarcaConsultaEntity criarConsultaEntity(MarcaConsultaDTO marcaConsultaDTO) {
+    private MarcaConsultaEntity criarConsultaEntity(MarcaConsultaDTO marcaConsultaDTO, double valorConsulta) {
         MarcaConsultaEntity marcaConsultaEntity = new MarcaConsultaEntity();
         marcaConsultaEntity.setTipoConsulta(marcaConsultaDTO.getTipoConsulta());
         marcaConsultaEntity.setData(marcaConsultaDTO.getData());
-        marcaConsultaEntity.setValor(marcaConsultaDTO.getValor());
+        marcaConsultaEntity.setValor(valorConsulta);
 
         CadastrarUsers usuario = usuarioAssociado(marcaConsultaDTO);
         if (usuario != null) {
@@ -69,4 +75,6 @@ public class CadastroConsultaService {
             usersRepository.save(usuario);
         }
     }
+
+
 }
