@@ -1,7 +1,6 @@
 package com.hospital.apihospital.services.ConsultasServices.CadastroConsulta;
 
 import com.hospital.apihospital.Model.DTO.MarcaConsultaDTO;
-import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Entity.MarcaConsultaEntity;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CadastroConsultaService {
@@ -26,6 +23,7 @@ public class CadastroConsultaService {
 
     @Autowired
     private UsersRepository usersRepository;
+
     @Transactional
     public ResponseEntity<String> cadastrarConsulta(@Valid MarcaConsultaDTO marcaConsultaDTO, BindingResult result) {
         if (result.hasErrors()) {
@@ -33,23 +31,8 @@ public class CadastroConsultaService {
         }
 
         try {
-            MarcaConsultaEntity marcaConsultaEntity = new MarcaConsultaEntity();
-            marcaConsultaEntity.setTipoConsulta(marcaConsultaDTO.getTipoConsulta());
-            marcaConsultaEntity.setData(marcaConsultaDTO.getData());
-            marcaConsultaEntity.setValor(marcaConsultaDTO.getValor());
-
-            if (marcaConsultaDTO.getCadastrarUsersId() != null) {
-                CadastrarUsers usuario = usersRepository.findById(marcaConsultaDTO.getCadastrarUsersId()).orElse(null);
-                if (usuario != null) {
-                    marcaConsultaEntity.setCadastrarUsers(usuario);
-
-                    if (RoleEnum.FUNCIONARIO.equals(usuario.getRole())) {
-                        double valorConsulta = marcaConsultaDTO.getValor();
-                        usuario.setSalario(usuario.getSalario() - valorConsulta);
-                        usersRepository.save(usuario);
-                    }
-                }
-            }
+            MarcaConsultaEntity marcaConsultaEntity = criarConsultaEntity(marcaConsultaDTO);
+            descontarValorConsulta(usuarioAssociado(marcaConsultaDTO), marcaConsultaDTO.getValor());
 
             marcaConsultaRepository.save(marcaConsultaEntity);
 
@@ -59,4 +42,31 @@ public class CadastroConsultaService {
         }
     }
 
+    private MarcaConsultaEntity criarConsultaEntity(MarcaConsultaDTO marcaConsultaDTO) {
+        MarcaConsultaEntity marcaConsultaEntity = new MarcaConsultaEntity();
+        marcaConsultaEntity.setTipoConsulta(marcaConsultaDTO.getTipoConsulta());
+        marcaConsultaEntity.setData(marcaConsultaDTO.getData());
+        marcaConsultaEntity.setValor(marcaConsultaDTO.getValor());
+
+        CadastrarUsers usuario = usuarioAssociado(marcaConsultaDTO);
+        if (usuario != null) {
+            marcaConsultaEntity.setCadastrarUsers(usuario);
+        }
+
+        return marcaConsultaEntity;
+    }
+
+    private CadastrarUsers usuarioAssociado(MarcaConsultaDTO marcaConsultaDTO) {
+        if (marcaConsultaDTO.getCadastrarUsersId() != null) {
+            return usersRepository.findById(marcaConsultaDTO.getCadastrarUsersId()).orElse(null);
+        }
+        return null;
+    }
+
+    private void descontarValorConsulta(CadastrarUsers usuario, double valorConsulta) {
+        if (usuario != null && RoleEnum.FUNCIONARIO.equals(usuario.getRole())) {
+            usuario.setSalario(usuario.getSalario() - valorConsulta);
+            usersRepository.save(usuario);
+        }
+    }
 }
