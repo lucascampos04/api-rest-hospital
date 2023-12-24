@@ -50,4 +50,40 @@ public class UsersController {
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
     }
+    /**
+     * Atualiza um usuário existente.
+     *
+     * @param userId     ID do usuário a ser atualizado.
+     * @param usersDTO   O objeto UsersDTO contendo as novas informações do usuário.
+     * @param result     O objeto BindingResult para validação.
+     * @return Uma resposta com a mensagem de sucesso ou erro.
+     */
+    @PutMapping("/update/users/{userId}")
+    public ResponseEntity<String> atualizarUsuario(
+            @PathVariable Long userId,
+            @Valid @RequestBody UsersDTO usersDTO,
+            BindingResult result) {
+        ResponseEntity<String> response = cadastrarUserService.atualizarUsuario(userId, usersDTO, result);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return ResponseEntity.ok().body(response.getBody());
+        } else {
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        }
+    }
+
+    /**
+     * Exclui um usuário existente.
+     *
+     * @param userId ID do usuário a ser excluído.
+     * @return Uma resposta com a mensagem de sucesso ou erro.
+     */
+    @DeleteMapping("/delete/users/{userId}")
+    public ResponseEntity<String> excluirUsuario(@PathVariable Long userId) {
+        ResponseEntity<String> response = cadastrarUserService.excluirUsuario(userId);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return ResponseEntity.ok().body(response.getBody());
+        } else {
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        }
+    }
 }
