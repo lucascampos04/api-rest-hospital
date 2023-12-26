@@ -3,7 +3,9 @@ package com.hospital.apihospital.controller.RegistrosPacientes;
 import javax.validation.Valid;
 
 import com.hospital.apihospital.services.UsersServices.CadastroService.CadastroService.CadastrarUserService;
+import com.hospital.apihospital.services.UsersServices.DeleteUser.DeleteUserService;
 import com.hospital.apihospital.services.UsersServices.ListUsersServices.ListUserServices;
+import com.hospital.apihospital.services.UsersServices.UpdateUsers.UpdateUserService;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +22,19 @@ import java.util.List;
 @RequestMapping("api/v1/usuarios")
 public class UsersController {
 
-    @Autowired
-    private CadastrarUserService cadastrarUserService;
+    private final CadastrarUserService cadastrarUserService;
 
-    @Autowired
-    private ListUserServices listUserServices;
+    private final UpdateUserService updateUserService;
+
+    private final ListUserServices listUserServices;
+    private final DeleteUserService deleteUserService;
+
+    public UsersController(CadastrarUserService cadastrarUserService, UpdateUserService updateUserService, ListUserServices listUserServices, DeleteUserService deleteUserService) {
+        this.cadastrarUserService = cadastrarUserService;
+        this.updateUserService = updateUserService;
+        this.listUserServices = listUserServices;
+        this.deleteUserService = deleteUserService;
+    }
 
     @GetMapping("/list/users")
     private ResponseEntity<List<UsersDTO>> listaUsuarios(){
@@ -63,7 +73,7 @@ public class UsersController {
             @PathVariable Long userId,
             @Valid @RequestBody UsersDTO usersDTO,
             BindingResult result) {
-        ResponseEntity<String> response = cadastrarUserService.atualizarUsuario(userId, usersDTO, result);
+        ResponseEntity<String> response = updateUserService.atualizarUsuario(userId, usersDTO, result);
         if (response.getStatusCode() == HttpStatus.OK) {
             return ResponseEntity.ok().body(response.getBody());
         } else {
@@ -79,7 +89,7 @@ public class UsersController {
      */
     @DeleteMapping("/delete/users/{userId}")
     public ResponseEntity<String> excluirUsuario(@PathVariable Long userId) {
-        ResponseEntity<String> response = cadastrarUserService.excluirUsuario(userId);
+        ResponseEntity<String> response = deleteUserService.excluirUsuario(userId);
         if (response.getStatusCode() == HttpStatus.OK) {
             return ResponseEntity.ok().body(response.getBody());
         } else {

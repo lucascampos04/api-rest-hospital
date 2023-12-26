@@ -24,7 +24,7 @@ public class CadastrarUsers {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "nome", length = 80)
+    @Column(name = "nome")
     @NotBlank(message = "O nome é obrigatório")
     @Pattern(regexp = "^[^0-9]+$", message = "O nome não deve conter números")
     private String nome;

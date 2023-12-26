@@ -30,8 +30,11 @@ import java.util.TimeZone;
 @Service
 public class CadastrarUserService {
 
-    @Autowired
-    private UsersRepository usersRepository;
+    private final UsersRepository usersRepository;
+
+    public CadastrarUserService(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+    }
 
 
     /**
@@ -108,19 +111,14 @@ public class CadastrarUserService {
                 case ENFERMEIRO:
                 case FAXINEIRO:
                 case OPERARIO:
-                    System.out.println("CASES");
                     user.setRole(RoleEnum.FUNCIONARIO);
                     break;
                 default:
-                    System.out.println("DEFAULT");
                     user.setRole(RoleEnum.PACIENTE);
             }
         } else {
-            System.out.println("ELSE");
             user.setRole(RoleEnum.PACIENTE);
         }
-
-        System.out.println(user.getRole());
         return user;
     }
 
@@ -269,54 +267,7 @@ public class CadastrarUserService {
         return null;
     }
 
-    /**
-     * Atualiza um usuário existente.
-     *
-     * @param userId     ID do usuário a ser atualizado.
-     * @param usersDTO   O objeto UsersDTO contendo as novas informações do usuário.
-     * @param result     O objeto BindingResult para validação.
-     * @return Uma resposta com a mensagem de sucesso ou erro.
-     */
-    @Transactional
-    public ResponseEntity<String> atualizarUsuario(Long userId, UsersDTO usersDTO, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body("Erro de validação");
-        }
 
-        Optional<CadastrarUsers> optionalUser = usersRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            CadastrarUsers user = optionalUser.get();
-            user.setNome(usersDTO.getNome());
-            user.setCpf(usersDTO.getCpf());
-            user.setRg(usersDTO.getRg());
-            user.setEmail(usersDTO.getEmail());
-
-
-            usersRepository.save(user);
-            return ResponseEntity.ok().body("Usuário atualizado com sucesso");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
-        }
-    }
-
-    /**
-     * Exclui um usuário existente.
-     *
-     * @param userId ID do usuário a ser excluído.
-     * @return Uma resposta com a mensagem de sucesso ou erro.
-     */
-    @Transactional
-    public ResponseEntity<String> excluirUsuario(@PathVariable Long userId) {
-        System.out.println("Recebida solicitação para excluir usuário com ID: " + userId);
-
-        Optional<CadastrarUsers> optionalUser = usersRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            usersRepository.deleteById(userId);
-            return ResponseEntity.ok().body("Usuário excluído com sucesso");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
-        }
-    }
 
 
 }
