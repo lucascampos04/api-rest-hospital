@@ -16,11 +16,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class ListConsultaServices {
-    @Autowired
-    private MarcaConsultaRepository marcaConsultaRepository;
+    private final MarcaConsultaRepository marcaConsultaRepository;
 
-    @Autowired
-    private UsersRepository usersRepository;
+    private final UsersRepository usersRepository;
+
+    public ListConsultaServices(MarcaConsultaRepository marcaConsultaRepository, UsersRepository usersRepository) {
+        this.marcaConsultaRepository = marcaConsultaRepository;
+        this.usersRepository = usersRepository;
+    }
+
     @Transactional
     public List<MarcaConsultaDTO> listConsultas() {
         try {
@@ -48,4 +52,5 @@ public class ListConsultaServices {
             throw new RuntimeException("Erro ao listar consultas. ", e);
         }
     }
+
 }

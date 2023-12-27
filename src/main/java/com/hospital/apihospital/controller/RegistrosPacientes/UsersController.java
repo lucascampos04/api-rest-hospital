@@ -2,6 +2,7 @@ package com.hospital.apihospital.controller.RegistrosPacientes;
 
 import javax.validation.Valid;
 
+import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.services.UsersServices.CadastroService.CadastroService.CadastrarUserService;
 import com.hospital.apihospital.services.UsersServices.DeleteUser.DeleteUserService;
 import com.hospital.apihospital.services.UsersServices.ListUsersServices.ListUserServices;
@@ -31,6 +32,16 @@ public class UsersController {
         this.updateUserService = updateUserService;
         this.listUserServices = listUserServices;
         this.deleteUserService = deleteUserService;
+    }
+
+    @GetMapping("/search-from/user/{userID}")
+    public ResponseEntity<CadastrarUsers> getSearchUserId(@PathVariable Long userID){
+        try {
+            CadastrarUsers user = listUserServices.searchUsers(userID);
+            return ResponseEntity.ok(user);
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/list/users")
