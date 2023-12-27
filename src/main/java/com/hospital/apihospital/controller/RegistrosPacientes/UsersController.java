@@ -21,11 +21,8 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/usuarios")
 public class UsersController {
-
     private final CadastrarUserService cadastrarUserService;
-
     private final UpdateUserService updateUserService;
-
     private final ListUserServices listUserServices;
     private final DeleteUserService deleteUserService;
 

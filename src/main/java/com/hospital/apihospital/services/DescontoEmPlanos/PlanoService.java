@@ -25,9 +25,9 @@ public class PlanoService {
         switch (tipoPlano.toLowerCase()) {
             case "bronze":
                 return aplicarDescontoBronze(valorConsulta);
-            case "ouro":
+            case "gold":
                 return aplicarDescontoOuro(valorConsulta);
-            case "prata":
+            case "silver":
                 return aplicarDescontoPrata(valorConsulta);
             case "vip":
                 return aplicarDescontoVip(valorConsulta);

@@ -2,9 +2,11 @@ package com.hospital.apihospital.services.UsersServices.CadastroService.Cadastro
 
 import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
+import com.hospital.apihospital.Model.Entity.MarcaConsultaEntity;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
+import com.hospital.apihospital.services.DescontoEmPlanos.PlanoService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -70,12 +72,16 @@ public class CadastrarUserService {
                 return validationResult;
             }
 
+            if (usersDTO.getPlanoPaciente() == null){
+                System.out.println("plano null");
+            }
+
             CadastrarUsers user = getCadastrarUsers(usersDTO);
 
 
             CadastrarUsers userSave = usersRepository.save(user);
 
-            return ResponseEntity.ok().body("Paciente cadastrado com sucesso\nID : " + userSave.getId() + " ROLE : " + userSave.getRole());
+            return ResponseEntity.ok().body("Paciente cadastrado com sucesso\nID : " + userSave.getId() + " ROLE : " + userSave.getRole() + "Plano" + userSave.getPlano_paciente());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -242,14 +248,17 @@ public class CadastrarUserService {
      * @return dataRegistro contendo a data de inserção formatada.
      * @throws ParseException Exceção lançada em caso de erro na formatação da data.
      */
-    private @NotBlank(message = "A data de registro é obrigatória") Date getCurrentDateInBrasilia() throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("America/Sao_Paulo"));
-        String dataRegistroFormatada = sdf.format(new Date());
-        Date dataRegistro = sdf.parse(dataRegistroFormatada);
-        return dataRegistro;
+    private Date getCurrentDateInBrasilia() {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            sdf.setTimeZone(TimeZone.getTimeZone("America/Sao_Paulo"));
+            String dataRegistroFormatada = sdf.format(new Date());
+            return sdf.parse(dataRegistroFormatada);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-
     /**
      * Manipula os erros de validação do Spring e retorna uma ResponseEntity com mensagens de erro, se houver.
      *

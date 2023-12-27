@@ -19,14 +19,15 @@ import javax.validation.Valid;
 @Service
 public class CadastroConsultaService {
 
-    @Autowired
-    private MarcaConsultaRepository marcaConsultaRepository;
+    private final MarcaConsultaRepository marcaConsultaRepository;
 
-    @Autowired
-    private UsersRepository usersRepository;
-
-    @Autowired
-    private PlanoService planoService;
+    private final UsersRepository usersRepository;
+    private final PlanoService planoService;
+    public CadastroConsultaService(MarcaConsultaRepository marcaConsultaRepository, UsersRepository usersRepository, PlanoService planoService) {
+        this.marcaConsultaRepository = marcaConsultaRepository;
+        this.usersRepository = usersRepository;
+        this.planoService = planoService;
+    }
 
     @Transactional
     public ResponseEntity<String> cadastrarConsulta(@Valid MarcaConsultaDTO marcaConsultaDTO, BindingResult result) {
@@ -37,10 +38,11 @@ public class CadastroConsultaService {
         try {
             CadastrarUsers usuario = usuarioAssociado(marcaConsultaDTO);
 
-            double valorConsultaComDesconto = planoService.calcularValorComDesconto(usuario, marcaConsultaDTO.getValor());
-            MarcaConsultaEntity marcaConsultaEntity = criarConsultaEntity(marcaConsultaDTO, valorConsultaComDesconto);
-            descontarValorConsulta(usuario, marcaConsultaDTO.getValor());
+            double valorConsulta = marcaConsultaDTO.getValor();
+            double valorComDesconto = planoService.calcularValorComDesconto(usuario, valorConsulta);
+            MarcaConsultaEntity marcaConsultaEntity = criarConsultaEntity(marcaConsultaDTO, valorComDesconto);
             marcaConsultaRepository.save(marcaConsultaEntity);
+            descontarValorConsulta(usuario, valorConsulta);
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Consulta cadastrada com sucesso");
         } catch (Exception e) {

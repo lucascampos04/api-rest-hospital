@@ -1,5 +1,6 @@
 package com.hospital.apihospital.Model.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
@@ -62,8 +63,12 @@ public class CadastrarUsers {
 
     @Column(name = "data_registro")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NotBlank(message = "A data de registro é obrigatória")
     private Date dataRegistro;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private String dataRegistroFormatada;
 
     @Column(name = "cargo")
     @Enumerated(EnumType.STRING)
