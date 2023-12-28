@@ -210,6 +210,10 @@ public class CadastrarUserService {
             return ResponseEntity.badRequest().body("Erro: O nome não pode conter números");
         }
 
+        if (usersRepository.existTelefone(usersDTO.getTelefone())){
+            return ResponseEntity.badRequest().body("TELEFONE já registrado. Tente Novamente");
+        }
+
 
         if (!"Masculino".equalsIgnoreCase(usersDTO.getGenero()) && !"Feminino".equalsIgnoreCase(usersDTO.getGenero())) {
             return ResponseEntity.badRequest().body("Erro: Gênero inválido. Escolha 'Masculino' ou 'Feminino'.");

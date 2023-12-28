@@ -25,7 +25,7 @@ public class ListUserServices {
             System.out.println("Tamanho da lista de usuários: " + users.size());
 
             return users.stream()
-                    .map(user -> UsersDTO.fromEntity(user))
+                    .map(UsersDTO::fromEntity)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
