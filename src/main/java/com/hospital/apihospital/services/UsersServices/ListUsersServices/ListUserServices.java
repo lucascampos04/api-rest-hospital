@@ -32,6 +32,13 @@ public class ListUserServices {
             throw new RuntimeException("Erro ao listar usuários. ", e);
         }
     }
+
+    /**
+     * Busca do usuário pelo ID
+     *
+     * @return O dados do usuário retornado
+     *
+     * */
     public CadastrarUsers searchUsers(Long userID){
         try{
             return usersRepository.findById(userID)
