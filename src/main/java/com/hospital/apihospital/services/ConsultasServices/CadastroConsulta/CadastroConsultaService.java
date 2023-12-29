@@ -20,7 +20,6 @@ import javax.validation.Valid;
 public class CadastroConsultaService {
 
     private final MarcaConsultaRepository marcaConsultaRepository;
-
     private final UsersRepository usersRepository;
     private final PlanoService planoService;
     public CadastroConsultaService(MarcaConsultaRepository marcaConsultaRepository, UsersRepository usersRepository, PlanoService planoService) {
