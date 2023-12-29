@@ -53,7 +53,7 @@ public class CadastrarUserService {
 
             ResponseEntity<String> validationResult = validateDataOfUserORemployees(usersDTO);
             ResponseEntity<String> validationErros = handlingErros(result);
-            ResponseEntity<String> validationDateNascimento = validationDataNascimentoOfEmployees(usersDTO);
+
             ResponseEntity<String> validationData = validateDataEmployees(usersDTO);
 
             if (validationErros != null) {
@@ -62,10 +62,6 @@ public class CadastrarUserService {
 
             if (validationData != null){
                 return validationData;
-            }
-
-            if (validationDateNascimento != null){
-                return validationDateNascimento;
             }
 
             if (validationResult != null) {
@@ -212,6 +208,14 @@ public class CadastrarUserService {
 
         if (usersRepository.existsByTelefone(usersDTO.getTelefone())){
             return ResponseEntity.badRequest().body("Erro: TELEFONE já registrado.");
+        }
+
+        if (usersDTO.getCargo() != null){
+            ResponseEntity<String> validationDateNascimento = validationDataNascimentoOfEmployees(usersDTO);
+
+            if (validationDateNascimento != null){
+                return validationDateNascimento;
+            }
         }
 
         if (!"Masculino".equalsIgnoreCase(usersDTO.getGenero()) && !"Feminino".equalsIgnoreCase(usersDTO.getGenero())) {
