@@ -3,8 +3,8 @@ package com.hospital.apihospital.services.UsersServices.UpdateUsers;
 import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
+import com.hospital.apihospital.services.SendEmail.EmailNotificationService;
 import jakarta.transaction.Transactional;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +12,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.util.Optional;
+
 @Service
 public class UpdateUserService {
     private final UsersRepository usersRepository;
+    private final EmailNotificationService passwordNotification;
 
-    public UpdateUserService(UsersRepository usersRepository) {
+    @Autowired
+    public UpdateUserService(UsersRepository usersRepository, EmailNotificationService passwordNotification) {
         this.usersRepository = usersRepository;
+        this.passwordNotification = passwordNotification;
     }
 
     /**
@@ -41,13 +45,24 @@ public class UpdateUserService {
             user.setCpf(usersDTO.getCpf());
             user.setRg(usersDTO.getRg());
             user.setEmail(usersDTO.getEmail());
+            user.setPasswordBefore(user.getPassword());
+            user.setPassword(usersDTO.getPassword());
 
+            if (!user.getPasswordBefore().equals(user.getPassword())){
+                try {
+                    passwordNotification.sendPasswordChangeNotification(user.getEmail(), user.getNome());
+                    System.out.println("Senha alterada. Nova senha: " + user.getPassword() + ", Senha antiga: " + user.getPasswordBefore());
+                } catch (Exception e) {
+                    System.err.println("Erro ao enviar e-mail de notificação: " + e.getMessage());
+                }
+            }
 
             usersRepository.save(user);
-            return ResponseEntity.ok().body("Usuário atualizado com sucesso");
+
+
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
         }
+        return ResponseEntity.ok("Usuário atualizado com sucesso");
     }
-
 }
