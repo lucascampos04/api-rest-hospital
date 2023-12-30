@@ -3,7 +3,7 @@ package com.hospital.apihospital.services.UsersServices.UpdateUsers;
 import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
-import com.hospital.apihospital.services.SendEmail.EmailNotificationService;
+import com.hospital.apihospital.services.SendEmail.MessageCreateAccountInSendOfPassword;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,12 +16,13 @@ import java.util.Optional;
 @Service
 public class UpdateUserService {
     private final UsersRepository usersRepository;
-    private final EmailNotificationService passwordNotification;
+
+    private final MessageCreateAccountInSendOfPassword messageUpdatePassword;
 
     @Autowired
-    public UpdateUserService(UsersRepository usersRepository, EmailNotificationService passwordNotification) {
+    public UpdateUserService(UsersRepository usersRepository, MessageCreateAccountInSendOfPassword messageUpdatePassword) {
         this.usersRepository = usersRepository;
-        this.passwordNotification = passwordNotification;
+        this.messageUpdatePassword = messageUpdatePassword;
     }
 
     /**
@@ -50,7 +51,7 @@ public class UpdateUserService {
 
             if (!user.getPasswordBefore().equals(user.getPassword())){
                 try {
-                    passwordNotification.sendPasswordChangeNotification(user.getEmail(), user.getNome());
+                    messageUpdatePassword.sendPasswordChangeNotification(user.getEmail(), user.getNome());
                     System.out.println("Senha alterada. Nova senha: " + user.getPassword() + ", Senha antiga: " + user.getPasswordBefore());
                 } catch (Exception e) {
                     System.err.println("Erro ao enviar e-mail de notificação: " + e.getMessage());
