@@ -30,6 +30,13 @@ public class CadastrarUsers {
     @Pattern(regexp = "^[^0-9]+$", message = "O nome não deve conter números")
     private String nome;
 
+    @Column(name = "password")
+    @NotBlank(message = "A senha é obrigatoria")
+    private String password;
+
+    @Column(name = "password_antiga")
+    private String passwordBefore;
+
     @Column(name = "rg", length = 15, unique = true)
     @NotBlank(message = "O RG é obrigatório")
     private String rg;
