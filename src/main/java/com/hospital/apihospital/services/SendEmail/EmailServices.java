@@ -32,7 +32,7 @@ public class EmailServices {
         System.out.println("Email enviado");
     }
 
-    public String generateRandomPassword(int length){
+    public String generateRandomPassword(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder password = new StringBuilder();
         Random random = new Random();
@@ -44,10 +44,9 @@ public class EmailServices {
         return password.toString();
     }
 
-    public String getPasswordEmailContent(String url) {
-        String password = generateRandomPassword(8);
+    public String getPasswordEmailContent(String resetPasswordUrl) {
         return "<p>Olá,</p>"
-                + "<p>Sua nova senha é: <strong>" + password + "</strong></p>"
-                + "<p>Por favor, acesse o link a seguir para fazer login e alterar sua senha: <a href='" + url + "'>" + url + "</a></p>";
+                + "<p>Sua nova senha é: <strong>" + generateRandomPassword(8) + "</strong></p>"
+                + "<p>Por favor, acesse o link a seguir para redefinir sua senha: <a href='" + resetPasswordUrl + "'>" + resetPasswordUrl + "</a></p>";
     }
 }

@@ -84,7 +84,9 @@ public class CadastrarUserService {
 
             emailServices.setMailSenderClient("New Password",
                     userSave.getEmail(),
-                    emailServices.getPasswordEmailContent("CLIQUE AQUI PARA REDEFINIR A SENHA"), nameUser);
+                    emailServices.getPasswordEmailContent("https://lucascampos04.github.io/pag404/"), userSave.getNome());
+
+
 
             return ResponseEntity.ok().body("Paciente cadastrado com sucesso\nID : " + userSave.getId() + " ROLE : " + userSave.getRole() + "Plano" + userSave.getPlano_paciente());
         } catch (Exception e) {
