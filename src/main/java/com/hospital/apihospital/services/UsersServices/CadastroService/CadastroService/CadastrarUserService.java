@@ -2,29 +2,21 @@ package com.hospital.apihospital.services.UsersServices.CadastroService.Cadastro
 
 import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
-import com.hospital.apihospital.Model.Entity.MarcaConsultaEntity;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
-import com.hospital.apihospital.services.DescontoEmPlanos.PlanoService;
-import com.hospital.apihospital.services.SendEmail.EmailServices;
+import com.hospital.apihospital.services.SendEmail.EmailNotificationService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Optional;
 import java.util.TimeZone;
 
 /**
@@ -34,9 +26,9 @@ import java.util.TimeZone;
 public class CadastrarUserService {
 
     private final UsersRepository usersRepository;
-    private final EmailServices emailServices;
+    private final EmailNotificationService emailServices;
 
-    public CadastrarUserService(UsersRepository usersRepository, EmailServices emailServices) {
+    public CadastrarUserService(UsersRepository usersRepository, EmailNotificationService emailServices) {
         this.usersRepository = usersRepository;
         this.emailServices = emailServices;
     }
@@ -76,6 +68,8 @@ public class CadastrarUserService {
             }
 
             CadastrarUsers user = getCadastrarUsers(usersDTO);
+            String passwordGenerated = emailServices.generateRandomPassword(8);
+            user.setPassword(passwordGenerated);
 
 
             CadastrarUsers userSave = usersRepository.save(user);
@@ -84,7 +78,7 @@ public class CadastrarUserService {
 
             emailServices.setMailSenderClient("New Password",
                     userSave.getEmail(),
-                    emailServices.getPasswordEmailContent("https://lucascampos04.github.io/pag404/"), userSave.getNome());
+                    emailServices.getPasswordEmailContent(passwordGenerated, "https://lucascampos04.github.io/pag404/"), userSave.getNome());
 
 
 

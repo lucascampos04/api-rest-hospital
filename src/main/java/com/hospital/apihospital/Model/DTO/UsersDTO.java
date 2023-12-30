@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
+import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,13 @@ public class UsersDTO {
     @NotBlank(message = "O nome é obrigatório")
     @Pattern(regexp = "^[^0-9]+$", message = "O nome não deve conter números")
     private String nome;
+
+    @Column(name = "password")
+    @NotBlank(message = "A senha é obrigatoria")
+    private String password;
+
+    @Column(name = "password_antiga")
+    private String passwordBefore;
 
     @NotBlank(message = "O CPF é obrigatório")
     private String cpf;
@@ -62,7 +70,7 @@ public class UsersDTO {
 
     public UsersDTO(Long id, String nome, String cpf, String rg, Date dataNascimento, String genero,
                     String email, String telefone, Date dataRegistro, String planoPaciente, RoleEnum role,
-                    CargoEnum cargo, Double salario) {
+                    CargoEnum cargo, Double salario, String password, String passwordBefore) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
@@ -76,6 +84,9 @@ public class UsersDTO {
         this.role = role;
         this.cargo = cargo;
         this.salario = salario;
+        this.password = password;
+        this.passwordBefore = passwordBefore;
+
     }
 
     public static UsersDTO fromEntity(CadastrarUsers users) {
@@ -92,7 +103,9 @@ public class UsersDTO {
                 users.getPlano_paciente(),
                 users.getRole(),
                 users.getCargo(),
-                users.getSalario()
+                users.getSalario(),
+                users.getPassword(),
+                users.getPasswordBefore()
         );
 
         return usersDTO;
