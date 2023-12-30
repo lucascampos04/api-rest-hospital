@@ -7,6 +7,7 @@ import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
 import com.hospital.apihospital.services.DescontoEmPlanos.PlanoService;
+import com.hospital.apihospital.services.SendEmail.EmailServices;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -33,9 +34,11 @@ import java.util.TimeZone;
 public class CadastrarUserService {
 
     private final UsersRepository usersRepository;
+    private final EmailServices emailServices;
 
-    public CadastrarUserService(UsersRepository usersRepository) {
+    public CadastrarUserService(UsersRepository usersRepository, EmailServices emailServices) {
         this.usersRepository = usersRepository;
+        this.emailServices = emailServices;
     }
 
 
@@ -76,6 +79,12 @@ public class CadastrarUserService {
 
 
             CadastrarUsers userSave = usersRepository.save(user);
+
+            String nameUser = userSave.getNome();
+
+            emailServices.setMailSenderClient("New Password",
+                    userSave.getEmail(),
+                    emailServices.getPasswordEmailContent("CLIQUE AQUI PARA REDEFINIR A SENHA"), nameUser);
 
             return ResponseEntity.ok().body("Paciente cadastrado com sucesso\nID : " + userSave.getId() + " ROLE : " + userSave.getRole() + "Plano" + userSave.getPlano_paciente());
         } catch (Exception e) {

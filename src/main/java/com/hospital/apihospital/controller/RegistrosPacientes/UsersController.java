@@ -11,6 +11,7 @@ import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class UsersController {
     private final ListUserServices listUserServices;
     private final DeleteUserService deleteUserService;
 
-    public UsersController(CadastrarUserService cadastrarUserService, UpdateUserService updateUserService, ListUserServices listUserServices, DeleteUserService deleteUserService) {
+    public UsersController(CadastrarUserService cadastrarUserService, UpdateUserService updateUserService, ListUserServices listUserServices, DeleteUserService deleteUserService, JavaMailSender javaMailSender) {
         this.cadastrarUserService = cadastrarUserService;
         this.updateUserService = updateUserService;
         this.listUserServices = listUserServices;
@@ -49,6 +50,7 @@ public class UsersController {
         List<UsersDTO> usuarios = listUserServices.listUsers();
         return ResponseEntity.ok().body(usuarios);
     }
+
 
     /**
      * Cadastra um novo paciente.
