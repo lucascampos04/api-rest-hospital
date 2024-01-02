@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -16,13 +17,14 @@ import java.util.Optional;
 @Service
 public class UpdateUserService {
     private final UsersRepository usersRepository;
-
     private final MessageCreateAccountInSendOfPassword messageUpdatePassword;
 
+    private final PasswordEncoder passwordEncoder;
     @Autowired
-    public UpdateUserService(UsersRepository usersRepository, MessageCreateAccountInSendOfPassword messageUpdatePassword) {
+    public UpdateUserService(UsersRepository usersRepository, MessageCreateAccountInSendOfPassword messageUpdatePassword, PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
         this.messageUpdatePassword = messageUpdatePassword;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -46,8 +48,8 @@ public class UpdateUserService {
             user.setCpf(usersDTO.getCpf());
             user.setRg(usersDTO.getRg());
             user.setEmail(usersDTO.getEmail());
-            user.setPasswordBefore(user.getPassword());
-            user.setPassword(usersDTO.getPassword());
+            user.setPasswordBefore(passwordEncoder.encode(user.getPassword()));
+            user.setPassword(passwordEncoder.encode(usersDTO.getPassword()));
 
             if (!user.getPasswordBefore().equals(user.getPassword())){
                 try {

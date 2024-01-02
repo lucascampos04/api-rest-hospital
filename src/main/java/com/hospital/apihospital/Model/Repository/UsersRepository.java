@@ -34,4 +34,5 @@ public interface UsersRepository extends JpaRepository<CadastrarUsers, Long> {
 
     boolean existsByTelefone(String telefone);
 
+    CadastrarUsers findByEmail(String email);
 }

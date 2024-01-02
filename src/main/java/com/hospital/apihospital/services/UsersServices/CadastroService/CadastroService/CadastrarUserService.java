@@ -8,6 +8,7 @@ import com.hospital.apihospital.Model.Repository.UsersRepository;
 import com.hospital.apihospital.services.SendEmail.EmailNotificationService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,13 +25,14 @@ import java.util.TimeZone;
  */
 @Service
 public class CadastrarUserService {
-
     private final UsersRepository usersRepository;
     private final EmailNotificationService emailServices;
+    private final PasswordEncoder passwordEncoder;
 
-    public CadastrarUserService(UsersRepository usersRepository, EmailNotificationService emailServices) {
+    public CadastrarUserService(UsersRepository usersRepository, EmailNotificationService emailServices, PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
         this.emailServices = emailServices;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -48,7 +50,6 @@ public class CadastrarUserService {
 
             ResponseEntity<String> validationResult = validateDataOfUserORemployees(usersDTO);
             ResponseEntity<String> validationErros = handlingErros(result);
-
             ResponseEntity<String> validationData = validateDataEmployees(usersDTO);
 
             if (validationErros != null) {
@@ -71,9 +72,7 @@ public class CadastrarUserService {
             String passwordGenerated = emailServices.generateRandomPassword(8);
             user.setPassword(passwordGenerated);
 
-
             CadastrarUsers userSave = usersRepository.save(user);
-
             String nameUser = userSave.getNome();
 
             emailServices.setMailSenderClient("New Password",
@@ -84,6 +83,7 @@ public class CadastrarUserService {
 
             return ResponseEntity.ok().body("Paciente cadastrado com sucesso\nID : " + userSave.getId() + " ROLE : " + userSave.getRole() + "Plano" + userSave.getPlano_paciente());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -109,6 +109,7 @@ public class CadastrarUserService {
         user.setSalario(usersDTO.getSalario());
         user.setTelefone(usersDTO.getTelefone());
         user.setDataRegistro(getCurrentDateInBrasilia());
+        
 
         if (usersDTO.getCargo() != null){
             switch (usersDTO.getCargo()){
