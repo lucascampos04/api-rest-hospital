@@ -8,11 +8,14 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 @Service
 public class MessageCreateAccountInSendOfPassword {
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     @Value("${support.mail}")
     private String supportMail;
+
+    public MessageCreateAccountInSendOfPassword(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void sendPasswordChangeNotification(String email, String nomeUsuario) {
         try {

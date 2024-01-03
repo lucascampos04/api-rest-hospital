@@ -11,7 +11,7 @@ import javax.mail.MessagingException;
 import java.util.Random;
 
 @Service
-public class EmailNotificationService{
+public class NotificationCreateAccount {
     @Autowired
     private JavaMailSender mailSender;
 

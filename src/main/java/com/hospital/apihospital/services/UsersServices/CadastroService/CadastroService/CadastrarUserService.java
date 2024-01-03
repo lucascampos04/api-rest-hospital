@@ -5,7 +5,7 @@ import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
-import com.hospital.apihospital.services.SendEmail.EmailNotificationService;
+import com.hospital.apihospital.services.SendEmail.NotificationCreateAccount;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,10 +26,10 @@ import java.util.TimeZone;
 @Service
 public class CadastrarUserService {
     private final UsersRepository usersRepository;
-    private final EmailNotificationService emailServices;
+    private final NotificationCreateAccount emailServices;
     private final PasswordEncoder passwordEncoder;
 
-    public CadastrarUserService(UsersRepository usersRepository, EmailNotificationService emailServices, PasswordEncoder passwordEncoder) {
+    public CadastrarUserService(UsersRepository usersRepository, NotificationCreateAccount emailServices, PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
         this.emailServices = emailServices;
         this.passwordEncoder = passwordEncoder;
