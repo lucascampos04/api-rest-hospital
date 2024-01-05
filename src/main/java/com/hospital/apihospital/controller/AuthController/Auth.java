@@ -5,11 +5,9 @@ import com.hospital.apihospital.services.AuthServices.LoginServices;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/v1/login")
 @RestController
 public class Auth {
@@ -20,12 +18,19 @@ public class Auth {
 
     @PostMapping("/auth")
     public ResponseEntity<String> auth(@RequestBody CadastrarUsers cadastrarUsers, HttpServletRequest request){
-        String token = loginServices.login(cadastrarUsers.getEmail(), cadastrarUsers.getPassword(), request);
-
-        if (token != null){
-            return ResponseEntity.ok("Token: "+token + " Role : " + cadastrarUsers.getAuthorities());
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed in Login");
+        try {
+            String token1 = loginServices.login(cadastrarUsers.getEmail(), cadastrarUsers.getPassword(), request);
+            if (token1 != null){
+                Object responseObject = new Object() {
+                    public final String token = token1;
+                    public final String role = cadastrarUsers.getAuthorities().toString();
+                };
+                return ResponseEntity.ok(responseObject.toString());
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed in Login");
+            }
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed Login: " + e.getMessage());
         }
     }
 }
