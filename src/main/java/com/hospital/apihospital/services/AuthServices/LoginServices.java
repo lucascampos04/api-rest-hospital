@@ -5,13 +5,14 @@ import com.hospital.apihospital.Model.Repository.UsersRepository;
 import com.hospital.apihospital.services.JwtServices.JwtTokenService;
 import com.hospital.apihospital.services.SendEmail.NotificationLogin;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.cglib.core.Local;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class LoginServices {
@@ -27,7 +28,7 @@ public class LoginServices {
         this.notificationLogin = notificationLogin;
     }
 
-    public String login(String email, String password, HttpServletRequest request){
+    public ResponseEntity<Map<String, Object>> login(String email, String password, HttpServletRequest request){
         CadastrarUsers cadastrarUsers = usersRepository.findByEmail(email);
 
         if (cadastrarUsers != null && passwordEncoder.matches(password, cadastrarUsers.getPassword())){
@@ -41,7 +42,13 @@ public class LoginServices {
             String horario = now.format(format);
 
             notificationLogin.sendNotificationLoginInAccount(cadastrarUsers.getEmail(), cadastrarUsers.getNome(), horario,userAgent);
-            return token;
+            System.out.println("Role : " + cadastrarUsers.getRole());
+
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("token", token);
+            responseMap.put("role", cadastrarUsers.getRole());
+
+            return ResponseEntity.ok().body(responseMap);
         } else {
             return null;
         }

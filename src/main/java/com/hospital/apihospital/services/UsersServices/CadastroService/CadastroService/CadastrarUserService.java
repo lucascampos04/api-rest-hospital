@@ -69,19 +69,25 @@ public class CadastrarUserService {
             }
 
             CadastrarUsers user = getCadastrarUsers(usersDTO);
+
             String passwordGenerated = emailServices.generateRandomPassword(8);
             user.setPassword(passwordGenerated);
 
             CadastrarUsers userSave = usersRepository.save(user);
+
             String nameUser = userSave.getNome();
 
             emailServices.setMailSenderClient("New Password",
                     userSave.getEmail(),
-                    emailServices.getPasswordEmailContent(passwordGenerated, "https://lucascampos04.github.io/pag404/"), userSave.getNome());
+                    emailServices.getPasswordEmailContent(passwordGenerated,
+                            "https://lucascampos04.github.io/pag404/"),
+                    nameUser);
 
 
 
-            return ResponseEntity.ok().body("Paciente cadastrado com sucesso\nID : " + userSave.getId() + " ROLE : " + userSave.getRole() + "Plano" + userSave.getPlano_paciente());
+            return ResponseEntity.ok().body("Paciente cadastrado com sucesso\nID : " + userSave.getId() +
+                    " ROLE : " + userSave.getRole() +
+                    "Plano" + userSave.getPlano_paciente());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();

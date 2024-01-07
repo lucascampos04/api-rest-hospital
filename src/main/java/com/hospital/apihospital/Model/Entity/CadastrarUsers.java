@@ -105,14 +105,13 @@ public class CadastrarUsers implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-
         if (getRole() != null) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + getRole().name()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + getRole()));
         }
 
         return authorities;
     }
+
 
     @Override
     public String getUsername() {

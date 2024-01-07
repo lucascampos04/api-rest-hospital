@@ -5,6 +5,7 @@ import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -64,6 +65,7 @@ public class UsersDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double salario;
 
+    @Column(name = "role", length = 20)
     @NotBlank(message = "A role é obrigatória")
     @Pattern(regexp = "^[^0-9]+$", message = "O role não deve conter números")
     private RoleEnum role;
