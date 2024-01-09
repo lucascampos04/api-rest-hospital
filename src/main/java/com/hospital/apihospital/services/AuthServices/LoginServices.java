@@ -43,10 +43,13 @@ public class LoginServices {
 
             notificationLogin.sendNotificationLoginInAccount(cadastrarUsers.getEmail(), cadastrarUsers.getNome(), horario,userAgent);
             System.out.println("Role : " + cadastrarUsers.getRole());
+            System.out.println("Nome " + cadastrarUsers.getNome());
 
             Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("token", token);
             responseMap.put("role", cadastrarUsers.getRole());
+            responseMap.put("nome", cadastrarUsers.getNome());
+            responseMap.put("cpf", cadastrarUsers.getCpf());
 
             return ResponseEntity.ok().body(responseMap);
         } else {

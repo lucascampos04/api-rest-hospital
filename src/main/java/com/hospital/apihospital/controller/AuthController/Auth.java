@@ -4,8 +4,11 @@ import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.services.AuthServices.LoginServices;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
