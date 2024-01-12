@@ -3,6 +3,7 @@ package com.hospital.apihospital.services.ConsultasServices;
 import com.hospital.apihospital.Model.DTO.ConsultaDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Entity.ConsultaEntity;
+import com.hospital.apihospital.Model.Enum.RoleEnum;
 import com.hospital.apihospital.Model.Repository.ConsultaRepository;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
 import com.hospital.apihospital.services.DescontoEmPlanos.PlanoService;
@@ -38,13 +39,23 @@ public class CadastrarConsultaService {
         consultaEntity.setUsers(users);
 
         ConsultaEntity consultaSalva = consultaRepository.save(consultaEntity);
-
         return convertEntityToDTO(consultaSalva);
     }
 
 
     private double calcularDesconto(ConsultaDTO consultaDTO){
         CadastrarUsers usuario = usersRepository.findById(consultaDTO.getUserId()).orElse(null);
+
+        if (usuario != null && RoleEnum.FUNCIONARIO.equals(usuario.getRole())){
+            double valor = consultaDTO.getValor();
+            double valorComDesconto = planoService.calcularValorComDesconto(usuario, valor);
+
+            double salarioNew = usuario.getSalario() - valorComDesconto;
+            usuario.setSalario(salarioNew);
+            usersRepository.save(usuario);
+            System.out.println("IF FUNCIONARIO");
+            return valorComDesconto;
+        }
         return planoService.calcularValorComDesconto(usuario, consultaDTO.getValor());
     }
 
