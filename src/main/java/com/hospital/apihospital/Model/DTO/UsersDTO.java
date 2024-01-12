@@ -5,8 +5,8 @@ import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.Model.Enum.CargoEnum;
 import com.hospital.apihospital.Model.Enum.RoleEnum;
 import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -70,9 +70,10 @@ public class UsersDTO {
     @Pattern(regexp = "^[^0-9]+$", message = "O role não deve conter números")
     private RoleEnum role;
 
-    public UsersDTO(Long id, String nome, String cpf, String rg, Date dataNascimento, String genero,
-                    String email, String telefone, Date dataRegistro, String planoPaciente, RoleEnum role,
-                    CargoEnum cargo, Double salario, String password, String passwordBefore) {
+    public UsersDTO(Long id, String nome, String cpf, String rg, Date dataNascimento,
+                    String genero, String email, String telefone, Date dataRegistro,
+                    String planoPaciente, RoleEnum role, CargoEnum cargo, Double salario,
+                    String password, String passwordBefore) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
@@ -88,28 +89,28 @@ public class UsersDTO {
         this.salario = salario;
         this.password = password;
         this.passwordBefore = passwordBefore;
-
     }
 
-    public static UsersDTO fromEntity(CadastrarUsers users) {
-        UsersDTO usersDTO = new UsersDTO(
-                users.getId(),
-                users.getNome(),
-                users.getCpf(),
-                users.getRg(),
-                users.getDataNascimento(),
-                users.getGenero(),
-                users.getEmail(),
-                users.getTelefone(),
-                users.getDataRegistro(),
-                users.getPlano_paciente(),
-                users.getRole(),
-                users.getCargo(),
-                users.getSalario(),
-                users.getPassword(),
-                users.getPasswordBefore()
-        );
+    public UsersDTO(Long idUser, String nomeUsuario, String emailUsuario, RoleEnum roleEnum) {
+    }
 
-        return usersDTO;
+    public static UsersDTO fromEntity(CadastrarUsers user) {
+        return new UsersDTO(
+                user.getId(),
+                user.getNome(),
+                user.getCpf(),
+                user.getRg(),
+                user.getDataNascimento(),
+                user.getGenero(),
+                user.getEmail(),
+                user.getTelefone(),
+                user.getDataRegistro(),
+                user.getPlano_paciente(),
+                user.getRole(),
+                user.getCargo(),
+                user.getSalario(),
+                user.getPassword(),
+                user.getPasswordBefore()
+        );
     }
 }

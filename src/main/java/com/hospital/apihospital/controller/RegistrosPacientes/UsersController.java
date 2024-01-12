@@ -1,22 +1,18 @@
 package com.hospital.apihospital.controller.RegistrosPacientes;
 
-import javax.validation.Valid;
-
+import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
-import com.hospital.apihospital.services.UsersServices.CadastroService.CadastroService.CadastrarUserService;
+import com.hospital.apihospital.services.UsersServices.CadastroService.CadastrarUser.CadastrarUserService;
 import com.hospital.apihospital.services.UsersServices.DeleteUser.DeleteUserService;
 import com.hospital.apihospital.services.UsersServices.ListUsersServices.ListUserServices;
 import com.hospital.apihospital.services.UsersServices.UpdateUsers.UpdateUserService;
-import org.apache.catalina.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.hospital.apihospital.Model.DTO.UsersDTO;
-
+import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")

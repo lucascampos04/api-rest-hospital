@@ -98,8 +98,8 @@ public class CadastrarUsers implements UserDetails {
     @Pattern(regexp = "^[^0-9]+$", message = "O role não deve conter números")
     private RoleEnum role;
 
-    @OneToMany(mappedBy = "cadastrarUsers", cascade = CascadeType.ALL)
-    private List<MarcaConsultaEntity> marcaConsultas;
+    @OneToMany(mappedBy = "users")
+    private List<ConsultaEntity> consultas;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

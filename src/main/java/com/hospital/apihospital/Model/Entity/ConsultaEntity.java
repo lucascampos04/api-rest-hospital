@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
-@Entity(name = "marca_consulta")
+
+@Entity(name = "consultas")
 @Data
-public class MarcaConsultaEntity {
+public class ConsultaEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "tipo_consulta")
+    @Column(name = "tipoConsulta")
     private String tipoConsulta;
 
     @Column(name = "data")
@@ -21,6 +22,6 @@ public class MarcaConsultaEntity {
     private Double valor;
 
     @ManyToOne
-    @JoinColumn(name = "cadastrarUsers_id")
-    private CadastrarUsers cadastrarUsers;
+    @JoinColumn(name = "usuario_id")
+    private CadastrarUsers users;
 }

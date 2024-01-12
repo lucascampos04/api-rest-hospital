@@ -1,4 +1,4 @@
-package com.hospital.apihospital.services.UsersServices.CadastroService.CadastroService;
+package com.hospital.apihospital.services.UsersServices.CadastroService.CadastrarUser;
 
 import com.hospital.apihospital.Model.DTO.UsersDTO;
 import com.hospital.apihospital.Model.Entity.CadastrarUsers;
@@ -115,7 +115,7 @@ public class CadastrarUserService {
         user.setSalario(usersDTO.getSalario());
         user.setTelefone(usersDTO.getTelefone());
         user.setDataRegistro(getCurrentDateInBrasilia());
-        
+
 
         if (usersDTO.getCargo() != null){
             switch (usersDTO.getCargo()){
