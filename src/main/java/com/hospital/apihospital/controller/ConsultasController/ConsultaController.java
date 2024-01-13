@@ -4,6 +4,7 @@ import com.hospital.apihospital.Model.DTO.ConsultaDTO;
 import com.hospital.apihospital.services.ConsultasServices.CadastrarConsultaService;
 import com.hospital.apihospital.services.ConsultasServices.ListConsulta;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,5 +34,10 @@ public class ConsultaController {
         return cadastrarConsultaService.cadastrarConsulta(consultaDto);
     }
 
+    @DeleteMapping("/delete/consultas/user/{userId}")
+    public ResponseEntity<String> deletarConsultasPorUserId(@PathVariable Long userId) {
+        cadastrarConsultaService.deletarTodasConsultasPorUserId(userId);
+        return ResponseEntity.ok("Todas as consultas do usuário excluídas com sucesso");
+    }
 
 }

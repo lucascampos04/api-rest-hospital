@@ -98,7 +98,7 @@ public class CadastrarUsers implements UserDetails {
     @Pattern(regexp = "^[^0-9]+$", message = "O role não deve conter números")
     private RoleEnum role;
 
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConsultaEntity> consultas;
 
     @Override

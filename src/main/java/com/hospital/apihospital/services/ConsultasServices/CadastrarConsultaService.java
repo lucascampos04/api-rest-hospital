@@ -8,6 +8,7 @@ import com.hospital.apihospital.Model.Repository.ConsultaRepository;
 import com.hospital.apihospital.Model.Repository.UsersRepository;
 import com.hospital.apihospital.services.DescontoEmPlanos.PlanoService;
 import com.hospital.apihospital.services.SendEmail.NotificationConsulta;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,4 +87,8 @@ public class CadastrarConsultaService {
         return dto;
     }
 
+    @Transactional
+    public void deletarTodasConsultasPorUserId(Long userId) {
+        consultaRepository.deleteByUserId(userId);
+    }
 }
