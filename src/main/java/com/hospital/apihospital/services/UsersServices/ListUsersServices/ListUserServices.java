@@ -42,7 +42,7 @@ public class ListUserServices {
     public CadastrarUsers searchUsers(Long userID){
         try{
             return usersRepository.findById(userID)
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID : " + String.valueOf(userID)));
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID : " + (userID)));
         } catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException("Erro ao buscar o usuários com o ID: " + e.getMessage());

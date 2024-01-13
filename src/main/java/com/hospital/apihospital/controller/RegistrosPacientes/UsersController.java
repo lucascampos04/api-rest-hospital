@@ -1,7 +1,6 @@
 package com.hospital.apihospital.controller.RegistrosPacientes;
 
 import com.hospital.apihospital.Model.DTO.UsersDTO;
-import com.hospital.apihospital.Model.Entity.CadastrarUsers;
 import com.hospital.apihospital.services.UsersServices.CadastroService.CadastrarUser.CadastrarUserService;
 import com.hospital.apihospital.services.UsersServices.DeleteUser.DeleteUserService;
 import com.hospital.apihospital.services.UsersServices.ListUsersServices.ListUserServices;
@@ -31,15 +30,17 @@ public class UsersController {
         this.deleteUserService = deleteUserService;
     }
 
-    @GetMapping("/search-from/user/{userID}")
-    public ResponseEntity<CadastrarUsers> getSearchUserId(@PathVariable Long userID){
-        try {
-            CadastrarUsers user = listUserServices.searchUsers(userID);
-            return ResponseEntity.ok(user);
-        } catch (Exception e){
-            return ResponseEntity.notFound().build();
+    @GetMapping("/search-from/user/{userId}")
+    public ResponseEntity<UsersDTO> searchUser(@PathVariable Long userId){
+        UsersDTO usersDTO = UsersDTO.fromEntity(listUserServices.searchUsers(userId));
+
+        if (usersDTO != null){
+            return ResponseEntity.ok().body(usersDTO);
+        } else {
+            return  ResponseEntity.notFound().build();
         }
     }
+
 
     @GetMapping("/list/users")
     private ResponseEntity<List<UsersDTO>> listaUsuarios(){
